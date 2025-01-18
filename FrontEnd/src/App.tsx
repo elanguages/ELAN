@@ -1,30 +1,23 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
+import React from "react";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 
-import { VStack, Text, Box } from "@chakra-ui/react";
-import { AiOutlinePaperClip } from "react-icons/ai";
+const HomeView = React.lazy(() => import("./home/page"));
+const PresentationView = React.lazy(() => import("./elan-presentation/page"));
 
-// Chakra provides five breakpoints by default:
-// const breakpoints = {
-//   base: "0em", // 0px
-//   sm: "30em", // ~480px
-//   md: "48em", // ~768px
-//   lg: "62em", // ~992px
-//   xl: "80em", // ~1280px
-//   "2xl": "96em", // ~1536px
-// }
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/">
+      <Route path="/home/*" element={<HomeView />} />
+      <Route path="/presentation/*" element={<PresentationView />} />
+    </Route>
+  )
+);
 
-function App() {
-  return (
-    <VStack>
-      <AiOutlinePaperClip />
-      <Text fontSize={{ base: "xs", md: "md", lg: "lg" }}>Text</Text>
-      <Box bg="red.500" boxShadow="0 4px 6px purple, 0 1px 3px purple">
-        This is styled
-      </Box>
-    </VStack>
-  );
-}
-
-export default App;
+export const App = () => {
+  return <RouterProvider router={router} />;
+};
