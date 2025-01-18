@@ -1,0 +1,23 @@
+@prefix : <http://example.org/esolang#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+:EsotericLanguage rdf:type owl:Class .
+:Tool rdf:type owl:Class .
+:Paradigm rdf:type owl:Class .
+
+:Brainfuck rdf:type :EsotericLanguage ;
+    rdfs:label "Brainfuck"@en ;
+    :hasParadigm :Imperative .
+
+:Whitespace rdf:type :EsotericLanguage ;
+    rdfs:label "Whitespace"@en ;
+    :hasParadigm :StackBased ;
+    :relatedLanguage :Brainfuck .
+
+:Imperative rdf:type :Paradigm ;
+    rdfs:label "Imperative"@en .
+
+:StackBased rdf:type :Paradigm ;
+    rdfs:label "Stack-Based"@en .

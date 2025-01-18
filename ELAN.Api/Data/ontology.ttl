@@ -1,0 +1,50 @@
+@prefix : <http://example.org/esolang#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# Classes
+:EsotericLanguage rdf:type owl:Class ;
+    rdfs:label "Esoteric Language"@en .
+
+:Tool rdf:type owl:Class ;
+    rdfs:label "Tool"@en .
+
+:Paradigm rdf:type owl:Class ;
+    rdfs:label "Paradigm"@en .
+
+# Properties
+:hasTool rdf:type owl:ObjectProperty ;
+    rdfs:domain :EsotericLanguage ;
+    rdfs:range :Tool ;
+    rdfs:label "has Tool"@en .
+
+:hasParadigm rdf:type owl:ObjectProperty ;
+    rdfs:domain :EsotericLanguage ;
+    rdfs:range :Paradigm ;
+    rdfs:label "has Paradigm"@en .
+
+:relatedLanguage rdf:type owl:ObjectProperty ;
+    rdfs:domain :EsotericLanguage ;
+    rdfs:range :EsotericLanguage ;
+    rdfs:label "related Language"@en .
+
+# Example Instances
+:Brainfuck rdf:type :EsotericLanguage ;
+    rdfs:label "Brainfuck"@en ;
+    :hasParadigm :Imperative ;
+    :hasTool :BrainfuckInterpreter .
+
+:Whitespace rdf:type :EsotericLanguage ;
+    rdfs:label "Whitespace"@en ;
+    :hasParadigm :StackBased ;
+    :relatedLanguage :Brainfuck .
+
+:Imperative rdf:type :Paradigm ;
+    rdfs:label "Imperative"@en .
+
+:StackBased rdf:type :Paradigm ;
+    rdfs:label "Stack-Based"@en .
+
+:BrainfuckInterpreter rdf:type :Tool ;
+    rdfs:label "Brainfuck Interpreter"@en .
