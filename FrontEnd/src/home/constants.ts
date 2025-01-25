@@ -1,1 +1,3 @@
-export const PLACEHOLDER_TEXT = "This is the home page of ELAN project.";
+export const PLACEHOLDER_TEXT = {
+  firstText: `This is the home page of ELAN project.`,
+};
