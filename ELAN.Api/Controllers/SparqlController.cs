@@ -16,7 +16,7 @@ namespace ELAN.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Query([FromBody] SparqlQueryRequest request)
+        public async Task<IActionResult> Query([FromBody] SparqlQueryRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.SparqlQuery))
             {
@@ -25,14 +25,24 @@ namespace ELAN.Api.Controllers
 
             try
             {
-                var rawResults = _sparqlRepository.ExecuteQuery(request.SparqlQuery);
+                var sanitizedQuery = request.SparqlQuery.Replace("\n", " ").Replace("\r", " ");
 
-                var formattedResults = rawResults.Results.Select(result =>
+                var rawResults = await _sparqlRepository.ExecuteQuery(sanitizedQuery);
+
+                var columns = rawResults.Variables; 
+                var rows = rawResults.Results.Select(result =>
                 {
-                    return result.ToDictionary(binding => binding.Key, binding => binding.Value.ToString());
+                    return columns.ToDictionary(
+                        column => column,
+                        column => result.HasValue(column) ? result[column]?.ToString() : null
+                    );
                 }).ToList();
 
-                return Ok(formattedResults);
+                return Ok(new
+                {
+                    columns,
+                    rows
+                });
             }
             catch (Exception ex)
             {

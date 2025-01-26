@@ -15,6 +15,9 @@
 # Logs
 *.log
 
+# Visual Studio folder
+.vs/
+
 # Build results
 [Dd]ebug/
 [Rr]elease/

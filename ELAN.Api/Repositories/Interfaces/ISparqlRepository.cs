@@ -5,6 +5,6 @@ namespace ELAN.Api.Repositories.Interfaces
 {
     public interface ISparqlRepository
     {
-        SparqlResultSet ExecuteQuery(string query);
+        Task<SparqlResultSet> ExecuteQuery(string query);
     }
 }

@@ -5,7 +5,7 @@ namespace ELAN.Api.Repositories
 {
     public class SparqlRepository : ISparqlRepository
     {
-        private const string SparqlEndpointUrl = "https://dbpedia.org/sparql";
+        private const string SparqlEndpointUrl = "https://query.wikidata.org/sparql";
         private readonly SparqlQueryClient _sparqlQueryClient;
 
         public SparqlRepository()
@@ -14,11 +14,11 @@ namespace ELAN.Api.Repositories
             _sparqlQueryClient = new SparqlQueryClient(httpClient, new Uri(SparqlEndpointUrl));
         }
 
-        public SparqlResultSet ExecuteQuery(string query)
+        public async Task<SparqlResultSet> ExecuteQuery(string query)
         {
             try
             {
-                return _sparqlQueryClient.QueryWithResultSetAsync(query).Result;
+                return await _sparqlQueryClient.QueryWithResultSetAsync(query);
             }
             catch (Exception ex)
             {
