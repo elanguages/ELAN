@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import axios, { AxiosError } from "axios";
+import { handleRequestError } from "../../shared/utils";
 
 export const useSPARQLCreateMutation = () => {
   return useMutation({
@@ -11,7 +12,7 @@ export const useSPARQLCreateMutation = () => {
       console.log(res.data);
     },
     onError: (error: AxiosError) => {
-      console.log(error);
+      handleRequestError(error);
     },
   });
 };
