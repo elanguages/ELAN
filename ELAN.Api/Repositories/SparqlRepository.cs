@@ -11,8 +11,12 @@ namespace ELAN.Api.Repositories
         public SparqlRepository()
         {
             var httpClient = new HttpClient();
+
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("ELAN-SPARQL-Client/1.0 (http://example.org; contact@example.org)");
+
             _sparqlQueryClient = new SparqlQueryClient(httpClient, new Uri(SparqlEndpointUrl));
         }
+
 
         public async Task<SparqlResultSet> ExecuteQuery(string query)
         {
