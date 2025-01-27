@@ -15,7 +15,8 @@ namespace ELAN.Api
                     options.AddDefaultPolicy(
                         builder =>
                         {
-                            builder.AllowAnyOrigin()
+                            builder
+                                .AllowAnyOrigin()
                                 .AllowAnyMethod()
                                 .AllowAnyHeader();
                         });
@@ -50,6 +51,8 @@ namespace ELAN.Api
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
