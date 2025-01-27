@@ -27,9 +27,16 @@ namespace ELAN.Api.Controllers
             {
                 var sanitizedQuery = request.SparqlQuery.Replace("\n", " ").Replace("\r", " ");
 
+                // Execute the query
                 var rawResults = await _sparqlRepository.ExecuteQuery(sanitizedQuery);
 
-                var columns = rawResults.Variables; 
+                if (rawResults == null || rawResults.Results.Count == 0)
+                {
+                    return NotFound(new { message = "No results found for the given query." });
+                }
+
+                // Extract columns and rows
+                var columns = rawResults.Variables;
                 var rows = rawResults.Results.Select(result =>
                 {
                     return columns.ToDictionary(
@@ -38,15 +45,18 @@ namespace ELAN.Api.Controllers
                     );
                 }).ToList();
 
-                return Ok(new
-                {
-                    columns,
-                    rows
-                });
+                return Ok(new { columns, rows });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { error = ex.Message });
+                var validationError = _sparqlRepository.ValidateQuery(request.SparqlQuery);
+
+                return BadRequest(new
+                {
+                    error = "SPARQL query execution failed.",
+                    details = ex.Message,
+                    validationError = validationError != "Valid" ? validationError : null
+                });
             }
         }
     }
