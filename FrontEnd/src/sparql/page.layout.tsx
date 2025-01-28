@@ -1,7 +1,7 @@
 import React from "react";
 import { Stack } from "@chakra-ui/react";
 
-export const QuerryConsoleContainer: React.FC<React.PropsWithChildren<{}>> = ({
+export const QueryConsoleContainer: React.FC<React.PropsWithChildren<{}>> = ({
   children,
 }) => {
   return (

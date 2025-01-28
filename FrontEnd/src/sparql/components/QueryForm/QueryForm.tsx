@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { IconButton } from "@chakra-ui/react";
 import { IoSendOutline } from "react-icons/io5";
-import { SparqlResult } from "../../entities";
+import { SparqlResult } from "../../../entities";
 import { TextInputContainer } from "./QueryForm.layout";
 interface QueryFormProps {
   createSPARQLPostMutation: {
