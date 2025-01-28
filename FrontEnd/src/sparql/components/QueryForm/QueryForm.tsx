@@ -2,8 +2,8 @@ import React, { useRef } from "react";
 import { IconButton } from "@chakra-ui/react";
 import { IoSendOutline } from "react-icons/io5";
 import { SparqlResult } from "../../entities";
-import { TextInputContainer } from "./QuerryForm.layout";
-interface QuerryFormProps {
+import { TextInputContainer } from "./QueryForm.layout";
+interface QueryFormProps {
   createSPARQLPostMutation: {
     isPending: boolean;
     mutateAsync: (query: string) => Promise<{ data: SparqlResult }>;
@@ -13,7 +13,7 @@ interface QuerryFormProps {
   setQuerryRes: React.Dispatch<React.SetStateAction<SparqlResult>>;
 }
 
-export const QuerryForm: React.FC<QuerryFormProps> = ({
+export const QueryForm: React.FC<QueryFormProps> = ({
   createSPARQLPostMutation,
   querry,
   setQuerry,
@@ -55,4 +55,4 @@ export const QuerryForm: React.FC<QuerryFormProps> = ({
   );
 };
 
-export default QuerryForm;
+export default QueryForm;
