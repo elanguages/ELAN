@@ -99,6 +99,9 @@ namespace ELAN.Api.Controllers
                             PropertyDescription = statementsResults.Results
                                 .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key)?
                                 .TryGetValue("propertyDescription", out var propertyDescription) == true ? propertyDescription.ToString() : null,
+                            Property = statementsResults.Results
+                                .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key)?
+                                .TryGetValue("property", out var property) == true ? property.ToString() : null,
                             Values = group.Distinct().ToList()
                         }
                     );
