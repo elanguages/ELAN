@@ -12,6 +12,7 @@ type Value = {
 type Property = {
   propertyDescription: string;
   values: Value[];
+  propertyLink: string;
 };
 
 export type EntityData = {

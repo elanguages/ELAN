@@ -54,7 +54,15 @@ export const SPARQLEntityView = () => {
               const property = statements[key];
               return (
                 <Table.Row key={rowIndex}>
-                  <Table.Cell fontWeight="bold">{rmven(key)}</Table.Cell>
+                  <Table.Cell fontWeight="bold">
+                    <a
+                      href={property.propertyLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {rmven(key)}
+                    </a>
+                  </Table.Cell>
                   <Table.Cell>{rmven(property.propertyDescription)}</Table.Cell>
                   <Table.Cell>
                     {property.values.map((val, valIndex) => {
