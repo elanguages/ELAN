@@ -1,15 +1,20 @@
-type Property = {
-  property: string;
-  propertyLabel: string;
+type Description = {
   propertyDescription: string;
-  value: string | null;
-  valueLabel: string | null;
+  propertyLabel: string;
+};
+
+type Value = {
+  value: string;
+  valueLabel?: string | null;
+  valueDescription?: string | null;
+};
+
+type Property = {
+  propertyDescription: string;
+  values: Value[];
 };
 
 export type EntityData = {
-  description: {
-    propertyDescription: string;
-    propertyLabel: string;
-  };
-  statements: Property[];
+  description: Description;
+  statements: Record<string, Property>;
 };
