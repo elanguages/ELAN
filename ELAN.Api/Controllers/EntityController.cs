@@ -25,7 +25,7 @@ namespace ELAN.Api.Controllers
 
             try
             {
-                var baseUrl = $"{Request.Scheme}://{Request.Host}/entity/";
+                var baseUrl = $"{Request.Scheme}://localhost:5173/sparql-entity/";
 
                 var descriptionQuery = $@"
                     SELECT ?propertyLabel ?propertyDescription WHERE {{

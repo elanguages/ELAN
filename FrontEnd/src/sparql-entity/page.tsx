@@ -29,7 +29,6 @@ export const SPARQLEntityView = () => {
   if (error) {
     return <>Error</>;
   }
-
   const statements = data?.statements || {};
   const keys = Object.keys(statements);
   return (
