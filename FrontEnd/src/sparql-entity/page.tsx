@@ -13,8 +13,6 @@ import {
 export const SPARQLEntityView = () => {
   const { id } = useParams();
   const { isLoading, data, error } = useEntityQuery(id!);
-
-  console.log(data);
   const rmven = (str: string | undefined | null) => {
     if (str && str.endsWith("@en")) {
       return str.slice(0, -3);
@@ -34,7 +32,6 @@ export const SPARQLEntityView = () => {
 
   const statements = data?.statements || {};
   const keys = Object.keys(statements);
-  let i = 0;
   return (
     <VStack>
       <Text fontWeight="bold">{rmven(data?.description.propertyLabel)}</Text>
@@ -68,11 +65,8 @@ export const SPARQLEntityView = () => {
                     {property.values.map((val, valIndex) => {
                       const linkValue = val.value;
                       const displayValueLabel = rmven(val.valueLabel);
-                      const displayDrescription = rmven(val.valueDescription);
-
                       return (
                         <div key={valIndex}>
-                          {/* Deci daca avem label si link => Display label hyperlink */}
                           {displayValueLabel ? (
                             <a
                               href={linkValue}
@@ -82,9 +76,7 @@ export const SPARQLEntityView = () => {
                             >
                               {displayValueLabel}
                             </a>
-                          ) : // daca nu avem label inseamna ca avem link
-                          // acest link poate sa fie ciudat cu ^^ poate sa fie poza
-                          linkValue.endsWith(".png") ||
+                          ) : linkValue.endsWith(".png") ||
                             linkValue.endsWith(".jpg") ||
                             linkValue.endsWith(".jpeg") ||
                             linkValue.endsWith(".svg") ? (
@@ -101,6 +93,22 @@ export const SPARQLEntityView = () => {
                           ) : (
                             <Text color="red">{linkValue}</Text>
                           )}
+                        </div>
+                      );
+                    })}
+                  </Table.Cell>
+                  <Table.Cell>
+                    {property.values.map((val, valIndex) => {
+                      const displayValueLabel = rmven(val.valueLabel);
+                      const displayDrescription = rmven(val.valueDescription);
+                      return (
+                        <div key={valIndex}>
+                          <Text>
+                            <Text as="span" fontWeight="semibold">
+                              {displayValueLabel}
+                            </Text>{" "}
+                            - {displayDrescription}
+                          </Text>
                         </div>
                       );
                     })}
