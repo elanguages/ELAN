@@ -80,20 +80,33 @@ namespace ELAN.Api.Controllers
 
                 var statementsResults = await _sparqlRepository.ExecuteQuery(statementsQuery);
 
-                var statements = statementsResults.Results.Select(result => new
-                {
-                    Property = ModifyWikidataLinks(result.HasValue("property") ? result["property"]?.ToString() : null, baseUrl),
-                    PropertyLabel = result.HasValue("propertyLabel") ? result["propertyLabel"]?.ToString() : null,
-                    PropertyDescription = result.HasValue("propertyDescription") ? result["propertyDescription"]?.ToString() : null,
-                    Value = ModifyWikidataLinks(result.HasValue("value") ? result["value"]?.ToString() : null, baseUrl),
-                    ValueLabel = result.HasValue("valueLabel") ? result["valueLabel"]?.ToString() : null,
-                    ValueDescription = result.HasValue("valueDescription") ? result["valueDescription"]?.ToString() : null,
-                }).ToList();
+                // **Group statements by propertyLabel**
+                var groupedStatements = statementsResults.Results
+                    .Where(result => result.HasValue("propertyLabel"))
+                    .GroupBy(
+                        result => result["propertyLabel"].ToString(),
+                        result => new
+                        {
+                            Value = ModifyWikidataLinks(result.HasValue("value") ? result["value"]?.ToString() : null, baseUrl),
+                            ValueLabel = result.HasValue("valueLabel") ? result["valueLabel"]?.ToString() : null,
+                            ValueDescription = result.HasValue("valueDescription") ? result["valueDescription"]?.ToString() : null
+                        }
+                    )
+                    .ToDictionary(
+                        group => group.Key,
+                        group => new
+                        {
+                            PropertyDescription = statementsResults.Results
+                                .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key)?
+                                .TryGetValue("propertyDescription", out var propertyDescription) == true ? propertyDescription.ToString() : null,
+                            Values = group.Distinct().ToList()
+                        }
+                    );
 
                 var response = new
                 {
                     Description = description,
-                    Statements = statements
+                    Statements = groupedStatements
                 };
 
                 return Ok(response);
