@@ -9,7 +9,7 @@ interface QueryFormProps {
 export const QueryTable: React.FC<QueryFormProps> = ({ queryRes }) => {
   const replaceWikidataUrl = (url: string): string => {
     const wikidataPrefix = "http://www.wikidata.org/entity/Q";
-    const localPrefix = "http://localhost:5177/api/entity/Q";
+    const localPrefix = "http://localhost:5173/sparql-entity/Q";
     if (url.startsWith(wikidataPrefix)) {
       return url.replace(wikidataPrefix, localPrefix);
     }
