@@ -25,7 +25,7 @@ namespace ELAN.Api.Controllers
 
             try
             {
-                var baseUrl = $"{Request.Scheme}://localhost:5173/sparql-entity/";
+                var baseUrl = $"{Request.Headers.Origin}/sparql-entity/";
 
                 var descriptionQuery = $@"
                     SELECT ?propertyLabel ?propertyDescription WHERE {{
@@ -94,15 +94,22 @@ namespace ELAN.Api.Controllers
                     )
                     .ToDictionary(
                         group => group.Key,
-                        group => new
+                        group =>
                         {
-                            PropertyDescription = statementsResults.Results
-                                .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key)?
-                                .TryGetValue("propertyDescription", out var propertyDescription) == true ? propertyDescription.ToString() : null,
-                            PropertyLink = statementsResults.Results
-                                .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key)?
-                                .TryGetValue("property", out var property) == true ? property.ToString() : null,
-                            Values = group.Distinct().ToList()
+                            // Get the first result that matches the propertyLabel
+                            var matchingResult = statementsResults.Results
+                                .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key);
+
+                            return new
+                            {
+                                PropertyDescription = matchingResult != null && matchingResult.TryGetValue("propertyDescription", out var propertyDescription)
+                                    ? propertyDescription?.ToString()
+                                    : null,
+                                PropertyLink = matchingResult != null && matchingResult.TryGetValue("property", out var property)
+                                    ? ModifyWikidataLinks(property?.ToString(), baseUrl)
+                                    : null,
+                                Values = group.Distinct().ToList()
+                            };
                         }
                     );
 
