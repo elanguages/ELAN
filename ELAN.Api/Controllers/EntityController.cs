@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ELAN.Api.Repositories.Interfaces;
 using System.Text.RegularExpressions;
+using ELAN.Api.Queries;
 
 namespace ELAN.Api.Controllers
 {
@@ -27,14 +28,7 @@ namespace ELAN.Api.Controllers
             {
                 var baseUrl = $"{Request.Headers.Origin}/sparql-entity/";
 
-                var descriptionQuery = $@"
-                    SELECT ?propertyLabel ?propertyDescription WHERE {{
-                        wd:{id} rdfs:label ?propertyLabel;
-                               schema:description ?propertyDescription.
-                        FILTER(LANG(?propertyLabel) = 'en')
-                        FILTER(LANG(?propertyDescription) = 'en')
-                    }}
-                ";
+                var descriptionQuery = SparqlQueries.GetEntityDescription(id);
 
                 var descriptionResults = await _sparqlRepository.ExecuteQuery(descriptionQuery);
                 var description = descriptionResults.Results.FirstOrDefault()?.ToDictionary(
@@ -42,45 +36,10 @@ namespace ELAN.Api.Controllers
                     binding => ModifyWikidataLinks(binding.Value?.ToString(), baseUrl)
                 );
 
-                var statementsQuery = $@"
-                   SELECT ?property ?propertyLabel ?propertyDescription ?value ?valueLabel ?valueDescription WHERE {{
-                      wd:{id} ?property ?value.
-  
-                      OPTIONAL {{
-                        ?property rdfs:label ?propertyLabel.
-                        FILTER(LANG(?propertyLabel) = ""en"")
-                      }}
-                      OPTIONAL {{
-                        ?property schema:description ?propertyDescription.
-                        FILTER(LANG(?propertyDescription) = ""en"")
-                      }}
-
-                      OPTIONAL {{
-                        ?value rdfs:label ?valueLabel.
-                        FILTER(LANG(?valueLabel) = ""en"")
-                      }}
-                      OPTIONAL {{
-                        ?value schema:description ?valueDescription.
-                        FILTER(LANG(?valueDescription) = ""en"")
-                      }}
-
-                      BIND(IRI(REPLACE(STR(?property), ""http://www.wikidata.org/prop/direct/"", ""http://www.wikidata.org/entity/"")) AS ?propertyEntity)
-                      OPTIONAL {{
-                        ?propertyEntity rdfs:label ?propertyLabel.
-                        FILTER(LANG(?propertyLabel) = ""en"")
-                      }}
-                      OPTIONAL {{
-                        ?propertyEntity schema:description ?propertyDescription.
-                        FILTER(LANG(?propertyDescription) = ""en"")
-                      }}
-
-                      FILTER(BOUND(?propertyLabel))
-                    }}
-                ";
+                var statementsQuery = SparqlQueries.GetEntityStatements(id);
 
                 var statementsResults = await _sparqlRepository.ExecuteQuery(statementsQuery);
 
-                // **Group statements by propertyLabel**
                 var groupedStatements = statementsResults.Results
                     .Where(result => result.HasValue("propertyLabel"))
                     .GroupBy(
@@ -96,7 +55,6 @@ namespace ELAN.Api.Controllers
                         group => group.Key,
                         group =>
                         {
-                            // Get the first result that matches the propertyLabel
                             var matchingResult = statementsResults.Results
                                 .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key);
 
