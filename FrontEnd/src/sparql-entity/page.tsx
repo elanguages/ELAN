@@ -31,7 +31,51 @@ export const SPARQLEntityView = () => {
   }
   const statements = data?.statements || {};
   const keys = Object.keys(statements);
-  console.log(data);
+  const renderValue = (
+    linkValue: string,
+    displayValueLabel: string | undefined | null
+  ) => {
+    if (displayValueLabel) {
+      return (
+        <a
+          href={linkValue}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: "underline" }}
+        >
+          {displayValueLabel}
+        </a>
+      );
+    }
+
+    const isImage = /\.(png|jpg|jpeg|svg)$/.test(linkValue);
+    if (isImage) {
+      return <Image src={linkValue} boxSize="100px" />;
+    }
+
+    if (linkValue.startsWith("http")) {
+      return (
+        <a
+          href={linkValue}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ textDecoration: "underline" }}
+        >
+          {linkValue}
+        </a>
+      );
+    }
+
+    if (linkValue.includes("T00:00:00Z^^")) {
+      return <Text>{linkValue.split("T00:00:00Z^^")[0]}</Text>;
+    }
+
+    if (linkValue.includes("^^")) {
+      return <Text>{linkValue.split("^^")[0]}</Text>;
+    }
+
+    return <Text color="red">{linkValue}</Text>;
+  };
   return (
     <VStack>
       <Text fontWeight="bold">{rmven(data?.description?.propertyLabel)}</Text>
@@ -67,36 +111,7 @@ export const SPARQLEntityView = () => {
                       const displayValueLabel = rmven(val.valueLabel);
                       return (
                         <div key={valIndex}>
-                          {displayValueLabel ? (
-                            <a
-                              href={linkValue}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ textDecoration: "underline" }}
-                            >
-                              {displayValueLabel}
-                            </a>
-                          ) : linkValue.endsWith(".png") ||
-                            linkValue.endsWith(".jpg") ||
-                            linkValue.endsWith(".jpeg") ||
-                            linkValue.endsWith(".svg") ? (
-                            <Image src={linkValue} boxSize="100px" />
-                          ) : linkValue.startsWith("http") ? (
-                            <a
-                              href={linkValue}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              style={{ textDecoration: "underline" }}
-                            >
-                              {linkValue}
-                            </a>
-                          ) : linkValue.includes("T00:00:00Z^^") ? (
-                            <Text>{linkValue.split("T00:00:00Z^^")[0]}</Text>
-                          ) : linkValue.includes("^^") ? (
-                            <Text>{linkValue.split("^^")[0]}</Text>
-                          ) : (
-                            <Text color="red">{linkValue}</Text>
-                          )}
+                          {renderValue(linkValue, displayValueLabel)}
                         </div>
                       );
                     })}
