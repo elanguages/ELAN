@@ -33,8 +33,8 @@ export const SPARQLEntityView = () => {
   const keys = Object.keys(statements);
   return (
     <VStack>
-      <Text fontWeight="bold">{rmven(data?.description.propertyLabel)}</Text>
-      <Text>{rmven(data?.description.propertyDescription)}</Text>
+      <Text fontWeight="bold">{rmven(data?.description?.propertyLabel)}</Text>
+      <Text>{rmven(data?.description?.propertyDescription)}</Text>
       <Stack margin="20px" overflowX="auto" width="100%">
         <Table.Root>
           <Table.Header>
