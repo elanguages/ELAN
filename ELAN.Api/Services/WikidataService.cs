@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using ELAN.Api.Models;
 using ELAN.Api.Queries;
 using ELAN.Api.Repositories.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -18,67 +19,77 @@ namespace ELAN.Api.Services
 
         private string GetBaseUrl()
         {
-            var origin = _httpContextAccessor.HttpContext?.Request.Headers["Origin"].FirstOrDefault() ??
+            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin.FirstOrDefault() ??
                          $"{_httpContextAccessor.HttpContext?.Request.Scheme}://{_httpContextAccessor.HttpContext?.Request.Host}";
             return $"{origin}/sparql-entity/";
         }
 
-        public async Task<Dictionary<string, string>?> GetEntityDescription(string id)
+        public async Task<EntityDescription?> GetEntityDescription(string id)
         {
-            var descriptionQuery = SparqlQueries.GetEntityDescription(id);
-            var descriptionResults = await _sparqlRepository.ExecuteQuery(descriptionQuery);
-            var description = descriptionResults.Results.FirstOrDefault()?.ToDictionary(
-                binding => binding.Key,
-                binding => binding.Value?.ToString() ?? string.Empty
-            );
+            var query = SparqlQueries.GetEntityDescription(id);
+            var results = await _sparqlRepository.ExecuteQuery(query);
 
-            return description;
+            var firstResult = results.Results.FirstOrDefault();
+            if (firstResult == null) return null;
+
+            return new EntityDescription
+            {
+                Label = firstResult.TryGetValue("propertyLabel", out var label) ? label?.ToString() : null,
+                Description = firstResult.TryGetValue("propertyDescription", out var description) ? description?.ToString() : null
+            };
         }
 
-        public async Task<Dictionary<string, object>?> GetEntityStatements(string id)
+        public async Task<List<EntityStatement>?> GetEntityStatements(string id)
         {
             var baseUrl = GetBaseUrl();
-            var statementsQuery = SparqlQueries.GetEntityStatements(id);
-            var statementsResults = await _sparqlRepository.ExecuteQuery(statementsQuery);
+            var query = SparqlQueries.GetEntityStatements(id);
+            var results = await _sparqlRepository.ExecuteQuery(query);
 
-            var groupedStatements = statementsResults.Results
+            var groupedStatements = results.Results
                 .Where(result => result.HasValue("propertyLabel"))
                 .GroupBy(
                     result => result["propertyLabel"].ToString(),
-                    result => new
+                    result => new StatementValue
                     {
-                        Value = ModifyWikidataLinks(result.HasValue("value") ? result["value"]?.ToString() : null, baseUrl),
-                        ValueLabel = result.HasValue("valueLabel") ? result["valueLabel"]?.ToString() : null,
-                        ValueDescription = result.HasValue("valueDescription") ? result["valueDescription"]?.ToString() : null
+                        Value = ModifyWikidataLinks(result["value"]?.ToString(), baseUrl),
+                        ValueLabel = result["valueLabel"]?.ToString(),
+                        ValueDescription = result["valueDescription"]?.ToString()
                     }
                 )
-                .ToDictionary(
-                    group => group.Key,
-                    group =>
+                .Select(group =>
+                {
+                    var matchingResult = results.Results
+                        .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key);
+
+                    return new EntityStatement
                     {
-                        var matchingResult = statementsResults.Results
-                            .FirstOrDefault(r => r.HasValue("propertyLabel") && r["propertyLabel"].ToString() == group.Key);
+                        PropertyLabel = group.Key,
+                        PropertyDescription = matchingResult != null && matchingResult.TryGetValue("propertyDescription", out var description)
+                            ? description?.ToString()
+                            : null,
+                        PropertyLink = matchingResult != null && matchingResult.TryGetValue("property", out var property)
+                            ? ModifyWikidataLinks(property?.ToString(), baseUrl)
+                            : null,
+                        Values = group.Distinct().ToList()
+                    };
+                })
+                .ToList();
 
-                        return new
-                        {
-                            PropertyDescription = matchingResult != null && matchingResult.TryGetValue("propertyDescription", out var propertyDescription)
-                                ? propertyDescription?.ToString()
-                                : null,
-                            PropertyLink = matchingResult != null && matchingResult.TryGetValue("property", out var property)
-                                ? ModifyWikidataLinks(property?.ToString(), baseUrl)
-                                : null,
-                            Values = group.Distinct().ToList()
-                        };
-                    }
-                );
-
-            var response = new Dictionary<string, object>
-            {
-                { "Statements", groupedStatements }
-            };
-
-            return response;
+            return groupedStatements;
         }
+
+        public async Task<EntityDetails?> GetEntityDetails(string id)
+        {
+            var description = await GetEntityDescription(id);
+            var statements = await GetEntityStatements(id);
+
+            return new EntityDetails
+            {
+                Description = description,
+                Statements = statements
+            };
+        }
+
 
         private static string ModifyWikidataLinks(string? input, string baseUrl)
         {

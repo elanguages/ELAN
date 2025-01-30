@@ -38,6 +38,7 @@ namespace ELAN.Api
                 return new OntologyRepository(ontologyPath);
             });
             builder.Services.AddScoped<WikidataService>();
+            builder.Services.AddScoped<EsolangService>();
 
             var app = builder.Build();
 
