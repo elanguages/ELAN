@@ -1,5 +1,6 @@
 
 using ELAN.Api.Repositories;
+using ELAN.Api.Services;
 
 namespace ELAN.Api
 {
@@ -29,12 +30,14 @@ namespace ELAN.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<Repositories.Interfaces.ISparqlRepository, Repositories.SparqlRepository>();
             builder.Services.AddSingleton<OntologyRepository>(provider =>
             {
                 var ontologyPath = Path.Combine(AppContext.BaseDirectory, "Data/ontology.ttl");
                 return new OntologyRepository(ontologyPath);
             });
+            builder.Services.AddScoped<WikidataService>();
 
             var app = builder.Build();
 
