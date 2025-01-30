@@ -29,17 +29,12 @@ namespace ELAN.Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddScoped<Repositories.Interfaces.ILanguageRepository, Repositories.LanguageRepository>();
             builder.Services.AddScoped<Repositories.Interfaces.ISparqlRepository, Repositories.SparqlRepository>();
             builder.Services.AddSingleton<OntologyRepository>(provider =>
             {
                 var ontologyPath = Path.Combine(AppContext.BaseDirectory, "Data/ontology.ttl");
                 return new OntologyRepository(ontologyPath);
             });
-
-            builder.Services.AddHttpClient<DBpediaRepository>();
-            builder.Services.AddHttpClient<WikidataRepository>();
-
 
             var app = builder.Build();
 
