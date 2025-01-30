@@ -31,6 +31,7 @@ export const SPARQLEntityView = () => {
   }
   const statements = data?.statements || {};
   const keys = Object.keys(statements);
+  console.log(data);
   return (
     <VStack>
       <Text fontWeight="bold">{rmven(data?.description?.propertyLabel)}</Text>
@@ -89,6 +90,10 @@ export const SPARQLEntityView = () => {
                             >
                               {linkValue}
                             </a>
+                          ) : linkValue.includes("T00:00:00Z^^") ? (
+                            <Text>{linkValue.split("T00:00:00Z^^")[0]}</Text>
+                          ) : linkValue.includes("^^") ? (
+                            <Text>{linkValue.split("^^")[0]}</Text>
                           ) : (
                             <Text color="red">{linkValue}</Text>
                           )}
