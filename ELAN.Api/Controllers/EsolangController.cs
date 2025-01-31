@@ -27,5 +27,33 @@ namespace ELAN.Api.Controllers
                 return StatusCode(500, new { error = ex.Message });
             }
         }
+
+        [HttpGet("filters")]
+        public async Task<IActionResult> GetEsolangFilters()
+        {
+            try
+            {
+                var filters = await _esolangService.GetEsolangFilters();
+                return Ok(filters);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
+
+        [HttpPost("filtered-esolang-entities")]
+        public async Task<IActionResult> GetFilteredLanguagesEntities([FromBody] Dictionary<string, object> filters)
+        {
+            try
+            {
+                var filteredEntities = await _esolangService.GetFilteredLanguagesEntities(filters);
+                return Ok(filteredEntities);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
+        }
     }
 }

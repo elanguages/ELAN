@@ -1,6 +1,8 @@
 ﻿using ELAN.Api.Models;
 using ELAN.Api.Queries;
 using ELAN.Api.Repositories.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 
 namespace ELAN.Api.Services
 {
@@ -22,24 +24,55 @@ namespace ELAN.Api.Services
 
         private readonly List<string> _excludedEntityIds =
         [
-            "Q1853192",
-            "Q17326337",
-            "Q43267126",
-            "Q107539410"
+            "Q1853192", "Q17326337", "Q43267126", "Q107539410"
         ];
 
+        private readonly HashSet<string> _keysOnlyProperty =
+        [
+            "described at URL@en", "source code repository URL@en",
+            "Homebrew formula name@en", "software version identifier@en", "official website@en"
+        ];
 
         private readonly WikidataService _wikidataService;
         private readonly ISparqlRepository _sparqlRepository;
+        private readonly IMemoryCache _cache;
+        private readonly ILogger<EsolangService> _logger;
 
-        public EsolangService(WikidataService wikidataService, ISparqlRepository sparqlRepository)
+        public EsolangService(WikidataService wikidataService, ISparqlRepository sparqlRepository, IMemoryCache cache, ILogger<EsolangService> logger)
         {
             _wikidataService = wikidataService;
             _sparqlRepository = sparqlRepository;
+            _cache = cache;
+            _logger = logger;
+        }
+
+        public async Task InitializeCacheAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Starting cache initialization...");
+
+                await GetLanguagesEntities();
+                await GetEsolangFilters();
+
+                _logger.LogInformation("Cache initialization completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred during cache initialization.");
+            }
         }
 
         public async Task<List<EsolangEntityResponse>> GetLanguagesEntities()
         {
+            const string cacheKey = "esolang_entities";
+
+            // Try to get from cache
+            if (_cache.TryGetValue(cacheKey, out var cachedEntitiesObj) && cachedEntitiesObj is List<EsolangEntityResponse> cachedEntities)
+            {
+                return cachedEntities;
+            }
+
             var languagesResults = await _sparqlRepository.ExecuteQuery(SparqlQueries.GetEsotericLanguages());
             var languages = languagesResults.Results
                 .Select(result => result["programminglanguage"]?.ToString()?.Split('/').Last())
@@ -50,21 +83,15 @@ namespace ELAN.Api.Services
 
             foreach (var languageId in languages)
             {
-                if (languageId == null) continue;
+                if (languageId == null || _excludedEntityIds.Contains(languageId)) continue;
 
-                if (_excludedEntityIds.Contains(languageId)) continue;
-
-
-                // Fetch full entity details
                 var entityDetails = await _wikidataService.GetEntityDetails(languageId);
                 if (entityDetails == null || entityDetails.Statements == null) continue;
 
-                // Filter statements based on excluded keys
                 var filteredStatements = entityDetails.Statements
                     .Where(statement => !_keysToExclude.Contains(statement.Key))
                     .ToDictionary(statement => statement.Key, statement => statement.Value);
 
-                // Add the entity to the response list
                 filteredEntities.Add(new EsolangEntityResponse
                 {
                     EntityId = languageId,
@@ -73,14 +100,109 @@ namespace ELAN.Api.Services
                 });
             }
 
+            _cache.Set(cacheKey, filteredEntities, TimeSpan.FromDays(1));
+
             return filteredEntities;
         }
-    }
 
-    public class EsolangEntityResponse
-    {
-        public string EntityId { get; set; } = string.Empty;
-        public Dictionary<string, string>? Description { get; set; }
-        public Dictionary<string, StatementDetails>? Statements { get; set; }
+        public async Task<Dictionary<string, object>> GetEsolangFilters()
+        {
+            const string cacheKey = "esolang_filters";
+
+            if (_cache.TryGetValue(cacheKey, out Dictionary<string, object> cachedFilters))
+            {
+                return cachedFilters;
+            }
+
+            var entities = await GetLanguagesEntities();
+            var filters = new Dictionary<string, object>();
+
+            foreach (var entity in entities)
+            {
+                if (entity.Statements == null) continue;
+
+                foreach (var statement in entity.Statements)
+                {
+                    var propertyLabel = statement.Key;
+
+                    if (_keysOnlyProperty.Contains(propertyLabel))
+                    {
+                        filters[propertyLabel] = true;
+                        continue;
+                    }
+
+                    if (!filters.ContainsKey(propertyLabel))
+                    {
+                        filters[propertyLabel] = new HashSet<string>();
+                    }
+
+                    var filterValues = (HashSet<string>)filters[propertyLabel];
+
+                    foreach (var value in statement.Value.Values)
+                    {
+                        filterValues.Add(value.ValueLabel ?? value.Value);
+                    }
+                }
+            }
+
+            var formattedFilters = filters.ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value is HashSet<string> set ? (object)set.ToList() : kvp.Value
+            );
+
+            _cache.Set(cacheKey, formattedFilters, TimeSpan.FromDays(1));
+
+            return formattedFilters;
+        }
+
+        public async Task<List<EsolangEntityResponse>> GetFilteredLanguagesEntities(Dictionary<string, object> filters)
+        {
+            var entities = await GetLanguagesEntities();
+
+            var filteredEntities = entities.Where(entity =>
+            {
+                if (entity.Statements == null) return false;
+
+                // Check if the entity matches **all** filters
+                foreach (var filter in filters)
+                {
+                    var filterKey = filter.Key;
+
+                    if (_keysOnlyProperty.Contains(filterKey))
+                    {
+                        // Keys-only check: the entity must contain this key
+                        if (!entity.Statements.ContainsKey(filterKey)) return false;
+                    }
+                    else
+                    {
+                        entity.Statements.TryGetValue(filterKey, out var statementDetails);
+
+                        if (statementDetails == null) return false;
+
+                        var filterValues = JsonConvert.DeserializeObject<List<string>>(filter.Value?.ToString() ?? string.Empty);
+                        if (filterValues == null) return false;
+
+                        var entityValues = statementDetails.Values
+                         .Select(value => value.ValueLabel ?? value.Value ?? string.Empty)
+                         .ToHashSet();
+
+                        // Check if all filter values are present in entity values
+                        if (!filterValues.All(filterVal => entityValues.Contains(filterVal))) return false;
+                    }
+                }
+
+                return true; // Entity matches all filters
+            }).ToList();
+
+            return filteredEntities;
+        }
+
+
+        public class EsolangEntityResponse
+        {
+            public string EntityId { get; set; } = string.Empty;
+            public Dictionary<string, string>? Description { get; set; }
+            public Dictionary<string, StatementDetails>? Statements { get; set; }
+        }
     }
 }

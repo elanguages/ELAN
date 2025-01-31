@@ -1,4 +1,3 @@
-
 using ELAN.Api.Repositories;
 using ELAN.Api.Services;
 
@@ -6,7 +5,7 @@ namespace ELAN.Api
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -29,8 +28,9 @@ namespace ELAN.Api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddMemoryCache();
             builder.Services.AddHttpContextAccessor();
+
             builder.Services.AddScoped<Repositories.Interfaces.ISparqlRepository, Repositories.SparqlRepository>();
             builder.Services.AddSingleton<OntologyRepository>(provider =>
             {
@@ -41,6 +41,12 @@ namespace ELAN.Api
             builder.Services.AddScoped<EsolangService>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var esolangService = scope.ServiceProvider.GetRequiredService<EsolangService>();
+                await esolangService.InitializeCacheAsync();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
