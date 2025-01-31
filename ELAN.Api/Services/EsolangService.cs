@@ -20,6 +20,15 @@ namespace ELAN.Api.Services
             "copyright status@en"
         ];
 
+        private readonly List<string> _excludedEntityIds =
+        [
+            "Q1853192",
+            "Q17326337",
+            "Q43267126",
+            "Q107539410"
+        ];
+
+
         private readonly WikidataService _wikidataService;
         private readonly ISparqlRepository _sparqlRepository;
 
@@ -42,6 +51,9 @@ namespace ELAN.Api.Services
             foreach (var languageId in languages)
             {
                 if (languageId == null) continue;
+
+                if (_excludedEntityIds.Contains(languageId)) continue;
+
 
                 // Fetch full entity details
                 var entityDetails = await _wikidataService.GetEntityDetails(languageId);
