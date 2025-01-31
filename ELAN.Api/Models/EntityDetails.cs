@@ -2,22 +2,15 @@
 {
     public class EntityDetails
     {
-        public EntityDescription? Description { get; set; }
-        public List<EntityStatement>? Statements { get; set; }
+        public Dictionary<string, string>? Description { get; set; }
+        public Dictionary<string, StatementDetails>? Statements { get; set; }
     }
 
-    public class EntityDescription
+    public class StatementDetails
     {
-        public string? Label { get; set; }
-        public string? Description { get; set; }
-    }
-
-    public class EntityStatement
-    {
-        public string? PropertyLabel { get; set; }
         public string? PropertyDescription { get; set; }
         public string? PropertyLink { get; set; }
-        public List<StatementValue> Values { get; set; } = [];
+        public List<StatementValue> Values { get; set; } = new();
     }
 
     public class StatementValue
@@ -26,5 +19,4 @@
         public string? ValueLabel { get; set; }
         public string? ValueDescription { get; set; }
     }
-
 }

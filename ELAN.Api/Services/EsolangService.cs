@@ -6,19 +6,19 @@ namespace ELAN.Api.Services
 {
     public class EsolangService
     {
-        private readonly List<string> _keysToExclude = new()
-            {
-                "image@en", "C64-Wiki ID@en", "Namuwiki ID@en", "icon@en", "Quora topic ID@en", "MathWorld ID@en",
-                "X username@en", "Alexa rank@en", "NicoNicoPedia ID@en", "Commons category@en", "logo image@en",
-                "File Format Wiki page ID@en", "Rosetta Code page ID@en", "BabelNet ID@en", "Facebook username@en",
-                "subreddit@en", "Microsoft Academic ID@en", "Google Knowledge Graph ID@en", "Freebase ID@en",
-                "Stack Exchange tag@en", "FOLDOC ID@en", "maintained by WikiProject@e", "uses@en", "has use@en",
-                "GitHub topic@en", "country@en", "discoverer or inventor@en", "maintained by WikiProject@en",
-                "author name string@en", "subclass of@en", "designed by@en", "Fandom article ID@en", "different from@en",
-                "writing system@en", "writable file format@en", "readable file format@en", "described by source@en",
-                "operating system@en", "language of work or name@en", "user manual URL@en", "named after@en",
-                "copyright status@en"
-            };
+        private readonly List<string> _keysToExclude =
+        [
+            "image@en", "C64-Wiki ID@en", "Namuwiki ID@en", "icon@en", "Quora topic ID@en", "MathWorld ID@en",
+            "X username@en", "Alexa rank@en", "NicoNicoPedia ID@en", "Commons category@en", "logo image@en",
+            "File Format Wiki page ID@en", "Rosetta Code page ID@en", "BabelNet ID@en", "Facebook username@en",
+            "subreddit@en", "Microsoft Academic ID@en", "Google Knowledge Graph ID@en", "Freebase ID@en",
+            "Stack Exchange tag@en", "FOLDOC ID@en", "maintained by WikiProject@e", "uses@en", "has use@en",
+            "GitHub topic@en", "country@en", "discoverer or inventor@en", "maintained by WikiProject@en",
+            "author name string@en", "subclass of@en", "designed by@en", "Fandom article ID@en", "different from@en",
+            "writing system@en", "writable file format@en", "readable file format@en", "described by source@en",
+            "operating system@en", "language of work or name@en", "user manual URL@en", "named after@en",
+            "copyright status@en"
+        ];
 
         private readonly WikidataService _wikidataService;
         private readonly ISparqlRepository _sparqlRepository;
@@ -29,7 +29,7 @@ namespace ELAN.Api.Services
             _sparqlRepository = sparqlRepository;
         }
 
-        public async Task<List<FilteredEntityResponse>> GetLanguagesEntities()
+        public async Task<List<EsolangEntityResponse>> GetLanguagesEntities()
         {
             var languagesResults = await _sparqlRepository.ExecuteQuery(SparqlQueries.GetEsotericLanguages());
             var languages = languagesResults.Results
@@ -37,7 +37,7 @@ namespace ELAN.Api.Services
                 .Where(id => !string.IsNullOrEmpty(id))
                 .ToList();
 
-            var filteredEntities = new List<FilteredEntityResponse>();
+            var filteredEntities = new List<EsolangEntityResponse>();
 
             foreach (var languageId in languages)
             {
@@ -45,19 +45,19 @@ namespace ELAN.Api.Services
 
                 // Fetch full entity details
                 var entityDetails = await _wikidataService.GetEntityDetails(languageId);
-                if (entityDetails == null) continue;
+                if (entityDetails == null || entityDetails.Statements == null) continue;
 
                 // Filter statements based on excluded keys
-                var filteredStatements = entityDetails.Statements?
-                    .Where(statement => statement.PropertyLabel != null && !_keysToExclude.Contains(statement.PropertyLabel))
-                    .ToList();
+                var filteredStatements = entityDetails.Statements
+                    .Where(statement => !_keysToExclude.Contains(statement.Key))
+                    .ToDictionary(statement => statement.Key, statement => statement.Value);
 
                 // Add the entity to the response list
-                filteredEntities.Add(new FilteredEntityResponse
+                filteredEntities.Add(new EsolangEntityResponse
                 {
                     EntityId = languageId,
                     Description = entityDetails.Description,
-                    Statements = filteredStatements ?? []
+                    Statements = filteredStatements
                 });
             }
 
@@ -65,10 +65,10 @@ namespace ELAN.Api.Services
         }
     }
 
-    public class FilteredEntityResponse
+    public class EsolangEntityResponse
     {
         public string EntityId { get; set; } = string.Empty;
-        public EntityDescription? Description { get; set; }
-        public List<EntityStatement> Statements { get; set; } = [];
+        public Dictionary<string, string>? Description { get; set; }
+        public Dictionary<string, StatementDetails>? Statements { get; set; }
     }
 }

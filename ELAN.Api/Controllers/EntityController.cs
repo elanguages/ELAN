@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ELAN.Api.Services;
-using ELAN.Api.Models;
 
 namespace ELAN.Api.Controllers
 {
@@ -25,21 +24,14 @@ namespace ELAN.Api.Controllers
 
             try
             {
-                var description = await _wikidataService.GetEntityDescription(id);
-                var statements = await _wikidataService.GetEntityStatements(id);
+                var entityDetails = await _wikidataService.GetEntityDetails(id);
 
-                if (description == null)
+                if (entityDetails?.Description == null)
                 {
                     return NotFound(new { error = "Entity not found." });
                 }
 
-                var response = new EntityDetails
-                {
-                    Description = description,
-                    Statements = statements
-                };
-
-                return Ok(response);
+                return Ok(entityDetails);
             }
             catch (Exception ex)
             {
