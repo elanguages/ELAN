@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useEntitiesQuery } from "./cache";
-import { Center, Spinner, Box } from "@chakra-ui/react";
+import { Center, Spinner, Stack, Text } from "@chakra-ui/react";
+
 import { EntitiesData } from "../entities";
-import { ForceGraph2D } from "react-force-graph";
+import { ForceGraph2D, ForceGraph3D } from "react-force-graph";
+import SpriteText from "three-spritetext";
 
 type Node = {
   id: string;
@@ -14,7 +16,6 @@ type Node = {
 type Edge = {
   source: string;
   target: string;
-  // label?: string;
 };
 
 type Graph = {
@@ -25,13 +26,13 @@ type Graph = {
 export const HomeView = () => {
   const { isLoading, data, error } = useEntitiesQuery();
   const [graph, setGraph] = useState<Graph | null>(null);
-
+  const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
+  const [seeValues, setSeeValues] = useState<boolean>(false);
   useEffect(() => {
     if (data) {
-      console.log(data);
       const graphData = transformDataToGraph(data);
-      console.log(graphData);
       setGraph(graphData);
+      setFilteredGraph(graphData); // Initialize filteredGraph with the full graph
     }
   }, [data]);
 
@@ -41,7 +42,42 @@ export const HomeView = () => {
     }
     return str;
   };
+  const renderValue = (
+    linkValue: string,
+    displayValueLabel: string | undefined | null
+  ): Node => {
+    const valueNode: Node = {
+      id: "",
+      name: "",
+      link: "",
+      group: 4,
+    };
+    valueNode.id = linkValue;
+    if (displayValueLabel) {
+      valueNode.link = linkValue;
+      valueNode.name = rmven(displayValueLabel) || displayValueLabel;
+      return valueNode;
+    }
+    if (linkValue.startsWith("http")) {
+      valueNode.link = linkValue;
+      valueNode.name = linkValue;
+      return valueNode;
+    }
+    if (linkValue.includes("T00:00:00Z^^")) {
+      valueNode.link = "";
+      valueNode.name = linkValue.split("T00:00:00Z^^")[0];
+      return valueNode;
+    }
+    if (linkValue.includes("^^")) {
+      valueNode.link = "";
+      valueNode.name = linkValue.split("^^")[0];
+      return valueNode;
+    }
 
+    valueNode.link = "";
+    valueNode.name = linkValue;
+    return valueNode;
+  };
   const transformDataToGraph = (data: EntitiesData): Graph => {
     const nodes: Node[] = [];
     const links: Edge[] = [];
@@ -54,6 +90,15 @@ export const HomeView = () => {
       group: 1,
     };
     nodes.push(centralNode);
+
+    const excludedKeys = [
+      "described at URL@en",
+      "source code repository URL@en",
+      "Homebrew formula name@en",
+      "software version identifier@en",
+      "official website@en",
+    ];
+
     data.forEach((entry) => {
       const entityId = entry.entityId;
       const entityLabel = rmven(entry.description?.propertyLabel) || entityId;
@@ -85,11 +130,106 @@ export const HomeView = () => {
             nodes.push(propNode);
           }
           links.push({ source: entityId, target: key });
+          //
+          statements[key].values.forEach((value) => {
+            if (!excludedKeys.includes(key) && seeValues) {
+              const valueNode: Node = renderValue(
+                value.value,
+                value.valueLabel
+              );
+
+              if (!nodes.some((node) => node.id === valueNode.id)) {
+                nodes.push(valueNode);
+              }
+
+              // Connect property node to value node
+              links.push({ source: key, target: value.value });
+            }
+          });
         });
       }
     });
-    // Validate links
+
     return { nodes, links };
+  };
+
+  const getParentId = (nodeId: string, graph: Graph): string | null => {
+    // Find the link where the target is the nodeId
+    const link = graph.links.find((link) => link.target.id === nodeId);
+
+    if (link) {
+      // Find the parent node using the source from the link
+      const parentNode = graph.nodes.find((node) => node.id === link.source.id);
+      return parentNode.id || null; // Return the parent node or null if not found
+    }
+
+    // Return null if no parent is found
+    return null;
+  };
+
+  const filterGraph = (nodeId: string, graph: Graph): Graph => {
+    const node = graph.nodes.find((node) => node.id === nodeId);
+    const group = node?.group;
+    if (group == 1) {
+      return graph;
+    } else if (group == 2 && data) {
+      const selectedEntity = data.find((entry) => entry.entityId === nodeId);
+
+      if (selectedEntity) {
+        const filteredData: EntitiesData = [selectedEntity];
+        const filteredGraph = transformDataToGraph(filteredData);
+        return filteredGraph;
+      }
+    } else if (group == 3 && data) {
+      // Filter for property nodes (nodeId ends with "@en")
+      const filteredData: EntitiesData = data.filter((entry) => {
+        // Check if the nodeId exists in the keys of the statements
+        return (
+          entry.statements && Object.keys(entry.statements).includes(nodeId)
+        );
+      });
+
+      if (filteredData.length > 0) {
+        const filteredGraph = transformDataToGraph(filteredData);
+        return filteredGraph;
+      }
+    } else if (group == 4 && data) {
+      const parentId = getParentId(nodeId, graph);
+
+      if (parentId) {
+        // Filter entities that have the parent key in statements
+        const filteredData: EntitiesData = data.filter((entry) => {
+          if (!entry.statements || !entry.statements[parentId]) {
+            return false; // Skip entities that don't have the parent key
+          }
+
+          // Check if nodeId is in the values array of the parent key
+          const values = entry.statements[parentId].values;
+          return values.some((value) => value.value === nodeId);
+        });
+
+        if (filteredData.length > 0) {
+          const filteredGraph = transformDataToGraph(filteredData);
+          return filteredGraph;
+        }
+      } else {
+        console.error(
+          `Value node ${nodeId} has no parent. Check graph construction.`
+        );
+      }
+    }
+    return graph;
+  };
+
+  const handleNodeRightClick = (node: any) => {
+    if (graph) {
+      const filtered = filterGraph(node.id, graph);
+      setFilteredGraph(filtered);
+    }
+  };
+
+  const resetFilter = () => {
+    setFilteredGraph(graph);
   };
 
   if (isLoading) {
@@ -104,35 +244,37 @@ export const HomeView = () => {
     return <>Error</>;
   }
 
-  return graph ? (
-    <Box>
-      <ForceGraph2D
-        graphData={graph}
+  return filteredGraph ? (
+    <Stack direction="column">
+      <Stack direction="row">
+        <input
+          type="checkbox"
+          onClick={() => {
+            setSeeValues(!seeValues);
+            resetFilter();
+          }}
+        />
+      </Stack>
+      <ForceGraph3D
+        graphData={filteredGraph}
         nodeLabel="name"
         nodeAutoColorBy="group"
-        linkDirectionalArrowLength={3.5}
-        linkDirectionalArrowRelPos={1}
         linkCurvature={0.25}
         onNodeClick={(node) => {
-          // Navigate to the link when a node is clicked
-          window.open(node.link, "_blank");
+          if (node.link != "") {
+            window.open(node.link, "_blank");
+          }
         }}
-        nodeCanvasObject={(node, ctx, globalScale) => {
-          const label = node.name;
-          const fontSize = 12 / globalScale; // Scale font size based on zoom level
-          ctx.font = `${fontSize}px Sans-Serif`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillStyle =
-            node.group == 1
-              ? "#007ACC"
-              : node.group == 2
-              ? "#FF6600"
-              : "#00CC66"; // Label color
-          ctx.fillText(label, node.x as number, node.y as number);
+        onNodeRightClick={handleNodeRightClick}
+        onBackgroundClick={resetFilter} // Reset filter when clicking on the background
+        nodeThreeObject={(node: any) => {
+          const sprite = new SpriteText(node.name);
+          sprite.color = node.color;
+          sprite.textHeight = 8;
+          return sprite;
         }}
       />
-    </Box>
+    </Stack>
   ) : (
     <p>Loading graph...</p>
   );
