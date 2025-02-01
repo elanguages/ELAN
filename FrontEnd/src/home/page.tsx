@@ -1,33 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useEntitiesQuery } from "./cache";
-import { Center, Spinner, Stack, Text } from "@chakra-ui/react";
+import { Box, Center, Spinner, Stack } from "@chakra-ui/react";
 
 import { EntitiesData } from "../entities";
-import { ForceGraph2D, ForceGraph3D } from "react-force-graph";
+import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
-
-type Node = {
-  id: string;
-  name: string;
-  link: string;
-  group: number;
-};
-
-type Edge = {
-  source: string;
-  target: string;
-};
-
-type Graph = {
-  nodes: Node[];
-  links: Edge[];
-};
+import { Node, Edge, Graph, Target, Source } from "../entities";
 
 export const HomeView = () => {
   const { isLoading, data, error } = useEntitiesQuery();
   const [graph, setGraph] = useState<Graph | null>(null);
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
-  const [seeValues, setSeeValues] = useState<boolean>(false);
+  const [seeValues, setSeeValues] = useState<boolean>(true);
   useEffect(() => {
     if (data) {
       const graphData = transformDataToGraph(data);
@@ -155,12 +139,15 @@ export const HomeView = () => {
 
   const getParentId = (nodeId: string, graph: Graph): string | null => {
     // Find the link where the target is the nodeId
-    const link = graph.links.find((link) => link.target.id === nodeId);
-
+    const link = graph.links.find(
+      (link) => (link.target as Target).id === nodeId
+    );
     if (link) {
       // Find the parent node using the source from the link
-      const parentNode = graph.nodes.find((node) => node.id === link.source.id);
-      return parentNode.id || null; // Return the parent node or null if not found
+      const parentNode = graph.nodes.find(
+        (node) => node.id === (link.source as Source).id
+      );
+      return parentNode?.id || null; // Return the parent node or null if not found
     }
 
     // Return null if no parent is found
@@ -245,36 +232,38 @@ export const HomeView = () => {
   }
 
   return filteredGraph ? (
-    <Stack direction="column">
-      <Stack direction="row">
-        <input
-          type="checkbox"
-          onClick={() => {
-            setSeeValues(!seeValues);
-            resetFilter();
+    <Box overflowX={"hidden"}>
+      <Stack direction="column">
+        <Stack direction="row">
+          <input
+            type="checkbox"
+            onClick={() => {
+              setSeeValues(!seeValues);
+              resetFilter();
+            }}
+          />
+        </Stack>
+        <ForceGraph3D
+          graphData={filteredGraph}
+          nodeLabel="name"
+          nodeAutoColorBy="group"
+          linkCurvature={0.25}
+          onNodeClick={(node) => {
+            if (node.link != "") {
+              window.open(node.link, "_blank");
+            }
+          }}
+          onNodeRightClick={handleNodeRightClick}
+          onBackgroundClick={resetFilter} // Reset filter when clicking on the background
+          nodeThreeObject={(node: any) => {
+            const sprite = new SpriteText(node.name);
+            sprite.color = node.color;
+            sprite.textHeight = 8;
+            return sprite;
           }}
         />
       </Stack>
-      <ForceGraph3D
-        graphData={filteredGraph}
-        nodeLabel="name"
-        nodeAutoColorBy="group"
-        linkCurvature={0.25}
-        onNodeClick={(node) => {
-          if (node.link != "") {
-            window.open(node.link, "_blank");
-          }
-        }}
-        onNodeRightClick={handleNodeRightClick}
-        onBackgroundClick={resetFilter} // Reset filter when clicking on the background
-        nodeThreeObject={(node: any) => {
-          const sprite = new SpriteText(node.name);
-          sprite.color = node.color;
-          sprite.textHeight = 8;
-          return sprite;
-        }}
-      />
-    </Stack>
+    </Box>
   ) : (
     <p>Loading graph...</p>
   );
