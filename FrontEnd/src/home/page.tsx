@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useEntitiesQuery, useFiltersQuery } from "./cache";
+import {
+  useEntitiesQuery,
+  useFilterCreateMutation,
+  useFiltersQuery,
+} from "./cache";
 import { Box, Center, Spinner, Stack, Button } from "@chakra-ui/react";
 import { EntitiesData } from "../entities";
 import { ForceGraph3D } from "react-force-graph";
@@ -19,6 +23,8 @@ export const HomeView = () => {
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [seeValues, setSeeValues] = useState<boolean>(true);
   const [seeFilter, setSeeFilter] = useState<boolean>(false);
+  const createFilterPostMutation = useFilterCreateMutation();
+
   useEffect(() => {
     if (data) {
       const graphData = transformDataToGraph(data);
@@ -243,9 +249,12 @@ export const HomeView = () => {
         </Button>
         {seeFilter && (
           <FilterForm
+            createFilterPostMutation={createFilterPostMutation}
             dataFilters={dataFilters}
             setFilters={setFilters}
             filters={filters}
+            setFilteredGraph={setFilteredGraph}
+            transformDataToGraph={transformDataToGraph}
           />
         )}
         <ForceGraph3D

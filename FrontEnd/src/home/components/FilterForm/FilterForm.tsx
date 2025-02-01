@@ -2,27 +2,36 @@ import React, { useRef } from "react";
 import { FiltersData } from "../../../entities";
 import { Box, HStack, Button } from "@chakra-ui/react";
 import { rmven } from "../../../shared/utils";
+import { createListCollection } from "@chakra-ui/react";
 import {
   SelectContent,
   SelectItem,
-  SelectLabel,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
 } from "../../../components/ui/select";
+import { EntitiesData } from "../../../entities";
+import { Graph } from "../../../entities";
 interface FilterFormProps {
+  setFilteredGraph: React.Dispatch<React.SetStateAction<Graph | null>>;
+  transformDataToGraph: (data: EntitiesData) => Graph;
   filters: any;
   setFilters: React.Dispatch<React.SetStateAction<any>>;
   dataFilters: FiltersData;
+  createFilterPostMutation: {
+    isPending: boolean;
+    mutateAsync: (query: object) => Promise<{ data: EntitiesData }>;
+  };
 }
 
 export const FilterForm: React.FC<FilterFormProps> = ({
   filters,
   setFilters,
   dataFilters,
+  createFilterPostMutation,
+  setFilteredGraph,
+  transformDataToGraph,
 }) => {
-  console.log(dataFilters);
-
   const formRef = useRef<HTMLFormElement | null>(null);
   const handleChange = (key: string, value: any) => {
     setFilters((prevFilters: any) => ({
@@ -42,15 +51,24 @@ export const FilterForm: React.FC<FilterFormProps> = ({
     }
     return rmven(text) || text;
   };
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Data to be Sent:", filters);
+    if (createFilterPostMutation.isPending) {
+      alert("Request is processing");
+      return;
+    }
+    try {
+      const response = await createFilterPostMutation.mutateAsync(filters);
+      handleReset();
+      setFilteredGraph(transformDataToGraph(response.data));
+    } catch (error) {
+      console.log(error);
+    }
   };
-  const handleReset = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleReset = () => {
     if (formRef.current != null) {
       formRef.current.reset();
-      setFilters("");
+      setFilters({});
     }
   };
   const handleRecomend = (e: React.FormEvent) => {
@@ -60,27 +78,34 @@ export const FilterForm: React.FC<FilterFormProps> = ({
 
   const renderFormField = (key: string, value: any) => {
     if (Array.isArray(value)) {
+      const collection = createListCollection({
+        items: value.map((option: string) => ({
+          label: renderText(option), // Use renderText to clean up the label
+          value: option, // Use the original value as the value
+        })),
+      });
+
       return (
-        <div key={key}>
-          <label>{rmven(key)}</label>
-          <select
-            multiple
-            value={filters[key] || []}
-            onChange={(e) => {
-              const selectedOptions = Array.from(
-                e.target.selectedOptions,
-                (option) => option.value
-              );
-              handleChange(key, selectedOptions);
-            }}
-          >
-            {value.map((option: string, index: number) => (
-              <option key={index} value={option}>
-                {renderText(option)}
-              </option>
+        <SelectRoot
+          collection={collection}
+          size="sm"
+          width="240px"
+          key={key}
+          onValueChange={(selectedValues) => {
+            handleChange(key, selectedValues.value[0]);
+          }}
+        >
+          <SelectTrigger>
+            <SelectValueText placeholder={rmven(key) as string} />
+          </SelectTrigger>
+          <SelectContent>
+            {collection.items.map((item) => (
+              <SelectItem item={item} key={item.value as string}>
+                {item.label}
+              </SelectItem>
             ))}
-          </select>
-        </div>
+          </SelectContent>
+        </SelectRoot>
       );
     }
   };
