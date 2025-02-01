@@ -1,17 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { useEntitiesQuery } from "./cache";
-import { Box, Center, Spinner, Stack } from "@chakra-ui/react";
-
+import { useEntitiesQuery, useFiltersQuery } from "./cache";
+import { Box, Center, Spinner, Stack, Button } from "@chakra-ui/react";
 import { EntitiesData } from "../entities";
 import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
 import { Node, Edge, Graph, Target, Source } from "../entities";
 import { rmven } from "../shared/utils";
+import { FilterForm } from "./components";
 export const HomeView = () => {
   const { isLoading, data, error } = useEntitiesQuery();
+  const {
+    isLoading: isLoadingFilters,
+    data: dataFilters,
+    error: errorFilters,
+  } = useFiltersQuery();
+  const [filters, setFilters] = useState("");
   const [graph, setGraph] = useState<Graph | null>(null);
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [seeValues, setSeeValues] = useState<boolean>(true);
+  const [seeFilter, setSeeFilter] = useState<boolean>(false);
   useEffect(() => {
     if (data) {
       const graphData = transformDataToGraph(data);
@@ -213,7 +220,7 @@ export const HomeView = () => {
     setFilteredGraph(graph);
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingFilters) {
     return (
       <Center mt={36}>
         <Spinner />
@@ -221,22 +228,26 @@ export const HomeView = () => {
     );
   }
 
-  if (error) {
+  if (error || errorFilters) {
     return <>Error</>;
   }
 
-  return filteredGraph ? (
+  return filteredGraph && dataFilters ? (
     <Box overflowX={"hidden"}>
       <Stack direction="column">
-        <Stack direction="row">
-          <input
-            type="checkbox"
-            onClick={() => {
-              setSeeValues(!seeValues);
-              resetFilter();
-            }}
+        <Button
+          onClick={() => setSeeFilter((prev) => !prev)}
+          margin="0px 20px 0px 20px"
+        >
+          Filters
+        </Button>
+        {seeFilter && (
+          <FilterForm
+            dataFilters={dataFilters}
+            setFilters={setFilters}
+            filters={filters}
           />
-        </Stack>
+        )}
         <ForceGraph3D
           graphData={filteredGraph}
           nodeLabel="name"
