@@ -1,4 +1,4 @@
-﻿namespace ELAN.Api.Queries
+﻿namespace Elan.Api.Esolang.Queries
 {
     public static class SparqlQueries
     {

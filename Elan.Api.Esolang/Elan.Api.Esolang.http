@@ -1,0 +1,6 @@
+@Elan.Api.Esolang_HostAddress = http://localhost:5032
+
+GET {{Elan.Api.Esolang_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

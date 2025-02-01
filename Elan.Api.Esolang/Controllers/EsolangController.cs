@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ELAN.Api.Services;
+using Elan.Api.Esolang.Services;
 
-namespace ELAN.Api.Controllers
+namespace Elan.Api.Esolang.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
