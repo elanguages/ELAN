@@ -6,7 +6,7 @@ import { EntitiesData } from "../entities";
 import { ForceGraph3D } from "react-force-graph";
 import SpriteText from "three-spritetext";
 import { Node, Edge, Graph, Target, Source } from "../entities";
-
+import { rmven } from "../shared/utils";
 export const HomeView = () => {
   const { isLoading, data, error } = useEntitiesQuery();
   const [graph, setGraph] = useState<Graph | null>(null);
@@ -20,12 +20,6 @@ export const HomeView = () => {
     }
   }, [data]);
 
-  const rmven = (str: string | undefined | null) => {
-    if (str && str.endsWith("@en")) {
-      return str.slice(0, -3);
-    }
-    return str;
-  };
   const renderValue = (
     linkValue: string,
     displayValueLabel: string | undefined | null

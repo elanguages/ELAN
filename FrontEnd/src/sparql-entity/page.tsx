@@ -10,15 +10,11 @@ import {
   Stack,
   Image,
 } from "@chakra-ui/react";
+import { rmven } from "../shared/utils";
+
 export const SPARQLEntityView = () => {
   const { id } = useParams();
   const { isLoading, data, error } = useEntityQuery(id!);
-  const rmven = (str: string | undefined | null) => {
-    if (str && str.endsWith("@en")) {
-      return str.slice(0, -3);
-    }
-    return str;
-  };
   if (isLoading) {
     return (
       <Center mt={36}>
