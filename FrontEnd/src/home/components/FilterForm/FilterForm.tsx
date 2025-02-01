@@ -127,19 +127,22 @@ export const FilterForm: React.FC<FilterFormProps> = ({
   return (
     <Box padding="0px 20px 0px 20px">
       <form onSubmit={handleSubmit} ref={formRef}>
-        <HStack wrap="wrap">
+        <HStack wrap="wrap" justifyContent="center" marginTop="10px">
           {Object.entries(dataFilters).map(([key, value]) =>
             renderFormField(key, value)
           )}
+        </HStack>
+        <HStack wrap="wrap" justifyContent="center" marginTop="10px">
           {Object.entries(dataFilters).map(([key, value]) =>
             renderFormFieldBoolean(key, value)
           )}
         </HStack>
+
         <HStack
           wrap="wrap"
           justifyContent="space-between"
           width="full"
-          marginTop="5px"
+          marginTop="10px"
         >
           <Button type="submit">Submit!</Button>
           <Button onClick={handleReset}>Reset fields!</Button>
