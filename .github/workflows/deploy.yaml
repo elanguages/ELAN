@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ACR_NAME: elanacr
-      IMAGE_TAG: latest
-      IMAGE_API: ${{ env.ACR_NAME }}.azurecr.io/elan-api:${{ env.IMAGE_TAG }}
-      IMAGE_ESOLANG_API: ${{ env.ACR_NAME }}.azurecr.io/elan-esolang-api:${{ env.IMAGE_TAG }}
-      IMAGE_SITE: ${{ env.ACR_NAME }}.azurecr.io/elan-site:${{ env.IMAGE_TAG }}
+      IMAGE_API: elanacr.azurecr.io/elan-api:latest
+      IMAGE_ESOLANG_API: elanacr.azurecr.io/elan-esolang-api:latest
+      IMAGE_SITE: elanacr.azurecr.io/elan-site:latest
 
     steps:
       # 1. Checkout code
