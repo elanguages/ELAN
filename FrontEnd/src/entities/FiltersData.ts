@@ -13,7 +13,7 @@ export type FiltersData = {
   "publication date@en": string[]; // ISO date strings
   "copyright license@en": string[];
   "programmed in@en": string[];
-  "Debian stable package@en": string[];
+  "Debian stable package@en": boolean;
   "intended public@en": string[];
   "described at URL@en": boolean;
   "media type@en": string[];

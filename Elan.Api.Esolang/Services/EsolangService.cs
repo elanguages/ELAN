@@ -30,7 +30,7 @@ namespace Elan.Api.Esolang.Services
         private readonly HashSet<string> _keysOnlyProperty =
         [
             "described at URL@en", "source code repository URL@en",
-            "Homebrew formula name@en", "software version identifier@en", "official website@en"
+            "Homebrew formula name@en", "software version identifier@en", "official website@en", "Debian stable package@en"
         ];
 
         private readonly WikidataService _wikidataService;

@@ -93,6 +93,7 @@ export const HomeView = () => {
       "Homebrew formula name@en",
       "software version identifier@en",
       "official website@en",
+      "Debian stable package@en",
     ];
 
     data.forEach((entry) => {
