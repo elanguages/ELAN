@@ -31,7 +31,7 @@ export const HomeView = () => {
       setGraph(graphData);
       setFilteredGraph(graphData); // Initialize filteredGraph with the full graph
     }
-  }, [data]);
+  }, [data, seeValues]);
 
   const renderValue = (
     linkValue: string,
@@ -221,7 +221,9 @@ export const HomeView = () => {
       setFilteredGraph(filtered);
     }
   };
-
+  const handleSeeValue = () => {
+    setSeeValues((prev) => !prev);
+  };
   const resetFilter = () => {
     setFilteredGraph(graph);
   };
@@ -241,12 +243,10 @@ export const HomeView = () => {
   return filteredGraph && dataFilters ? (
     <Box overflowX={"hidden"}>
       <Stack direction="column">
-        <Button
-          onClick={() => setSeeFilter((prev) => !prev)}
-          margin="0px 20px 0px 20px"
-        >
-          Filters
-        </Button>
+        <Stack direction="row" margin="0px 20px 0px 20px">
+          <Button onClick={() => setSeeFilter((prev) => !prev)}>Filters</Button>
+          <Button onClick={() => handleSeeValue()}>See Values</Button>
+        </Stack>
         {seeFilter && (
           <FilterForm
             createFilterPostMutation={createFilterPostMutation}
