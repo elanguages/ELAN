@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Elan.Api.Esolang.Controllers
 {
     [ApiController]
-    [Route("esolang-api/[controller]")]
+    [Route("api/[controller]")]
     public class EntityController : ControllerBase
     {
         private readonly WikidataService _wikidataService;
