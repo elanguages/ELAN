@@ -3,6 +3,7 @@ import {
   useEntitiesQuery,
   useFilterCreateMutation,
   useFiltersQuery,
+  useRecommendedCreateMutation,
 } from "./cache";
 import { Box, Center, Spinner, Stack, Button } from "@chakra-ui/react";
 import { EntitiesData } from "../entities";
@@ -21,9 +22,10 @@ export const HomeView = () => {
   const [filters, setFilters] = useState("");
   const [graph, setGraph] = useState<Graph | null>(null);
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
-  const [seeValues] = useState<boolean>(true);
+  const [seeValues, setSeeValues] = useState<boolean>(true);
   const [seeFilter, setSeeFilter] = useState<boolean>(false);
   const createFilterPostMutation = useFilterCreateMutation();
+  const createRecommendPostMutation = useRecommendedCreateMutation();
 
   useEffect(() => {
     if (data) {
@@ -250,6 +252,7 @@ export const HomeView = () => {
         {seeFilter && (
           <FilterForm
             createFilterPostMutation={createFilterPostMutation}
+            createRecommendPostMutation={createRecommendPostMutation}
             dataFilters={dataFilters}
             setFilters={setFilters}
             filters={filters}
