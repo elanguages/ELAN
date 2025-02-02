@@ -12,7 +12,9 @@
 <h4>
     <a href="https://www.youtube.com/watch?v=D8d8B8WtxgM">View Demo</a>
   <span> · </span>
-    <a href="https://github.com/Louis3797/awesome-readme-template">Documentation</a>
+    <a href="https://elanguages.site/esolang/swagger/index.html">Swagger</a>
+  <span> · </span>
+    <a href="https://elanguages.site/home">Web app</a>
 
 </div>
 
