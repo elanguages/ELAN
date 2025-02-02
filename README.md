@@ -193,8 +193,8 @@ MIT. See LICENSE for more information.
 
 ## :handshake: Contact
 
-Marcu Eduard - marcu.eduard37@gmail.com
-Dragoi George Stefan - dragoigeorgestefan@gmail.com
+<p>Marcu Eduard - marcu.eduard37@gmail.com</p>
+<p>Dragoi George Stefan - dragoigeorgestefan@gmail.com</p>
 
 <!-- Acknowledgments -->
 
