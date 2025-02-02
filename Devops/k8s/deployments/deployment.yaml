@@ -17,6 +17,7 @@ spec:
       containers:
         - name: elan-api
           image: elanacr.azurecr.io/elan-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:

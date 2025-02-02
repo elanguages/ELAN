@@ -17,6 +17,7 @@ spec:
       containers:
         - name: elan-esolang-api
           image: elanacr.azurecr.io/elan-esolang-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
