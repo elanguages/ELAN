@@ -33,7 +33,7 @@
   - [Installation](#gear-installation)
   - [Running Tests](#test_tube-running-tests)
   - [Run Locally](#running-run-locally)
-  - [Deployment](#triangular_flag_on_post-deployment)
+  <!-- - [Deployment](#triangular_flag_on_post-deployment) -->
 - [Usage](#eyes-usage)
   <!-- - [Roadmap](#compass-roadmap) -->
   <!-- - [Contributing](#wave-contributing) -->
