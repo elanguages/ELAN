@@ -54,7 +54,7 @@ jobs:
       - name: Log in to ACR
         uses: docker/login-action@v2
         with:
-          registry: ${{ env.ACR_NAME }}.azurecr.io
+          registry: elanacr.azurecr.io
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
