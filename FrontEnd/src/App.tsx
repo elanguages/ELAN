@@ -1,5 +1,10 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import RootLayout from "./layout";
 
 const HomeView = React.lazy(() => import("./home/page"));
@@ -16,6 +21,8 @@ export const App = () => {
           <Route path="/presentation/*" element={<PresentationView />} />
           <Route path="/sparql-entity/:id" element={<SPARQLEntityView />} />
           <Route path="/sparql/*" element={<SPARQLView />} />
+          {/* Catch-all route to redirect to home */}
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </RootLayout>
     </Router>
