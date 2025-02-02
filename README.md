@@ -160,7 +160,7 @@ Go to the project directory
 Install dependencies
 
 ```bash
-  nmp install
+  npm install
 ```
 
 Start the server
