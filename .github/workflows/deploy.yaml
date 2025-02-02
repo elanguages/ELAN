@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write # Require write permission to Fetch an OIDC token.
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
