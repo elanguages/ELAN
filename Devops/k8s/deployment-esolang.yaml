@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elan-esolang-api-deployment
+  labels:
+    app: elan-esolang-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: elan-esolang-api
+  template:
+    metadata:
+      labels:
+        app: elan-esolang-api
+    spec:
+      containers:
+        - name: elan-esolang-api
+          image: elanacr.azurecr.io/elan-esolang-api:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: "Production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elan-esolang-api-service
+  labels:
+    app: elan-esolang-api
+spec:
+  type: ClusterIP
+  selector:
+    app: elan-esolang-api
+  ports:
+    - port: 80
+      targetPort: 8080
