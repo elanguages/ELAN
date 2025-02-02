@@ -52,8 +52,7 @@
 ### :camera: Screenshots
 
 <div align="center"> 
-  <img src="https://placehold.co/600x400?text=Your+Screenshot+here" alt="screenshot" />
-  <img src="FrontEnd/src/assets/home.png" alt="logo" width="200" height="auto" />
+  <img src="FrontEnd/src/assets/home.png"  alt="screenshot" />
 </div>
 
 <!-- TechStack -->
