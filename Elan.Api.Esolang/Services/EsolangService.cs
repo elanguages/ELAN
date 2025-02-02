@@ -1,10 +1,10 @@
-﻿using ELAN.Api.Models;
-using ELAN.Api.Queries;
-using ELAN.Api.Repositories.Interfaces;
+﻿using Elan.Api.Esolang.Models;
+using Elan.Api.Esolang.Queries;
+using Elan.Api.Esolang.Repositories.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 
-namespace ELAN.Api.Services
+namespace Elan.Api.Esolang.Services
 {
     public class EsolangService
     {

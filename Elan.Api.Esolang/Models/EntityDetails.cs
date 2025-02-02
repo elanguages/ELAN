@@ -1,4 +1,4 @@
-﻿namespace ELAN.Api.Models
+﻿namespace Elan.Api.Esolang.Models
 {
     public class EntityDetails
     {

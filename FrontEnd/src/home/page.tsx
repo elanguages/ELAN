@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   useEntitiesQuery,
   useFilterCreateMutation,
@@ -21,7 +21,7 @@ export const HomeView = () => {
   const [filters, setFilters] = useState("");
   const [graph, setGraph] = useState<Graph | null>(null);
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
-  const [seeValues, setSeeValues] = useState<boolean>(true);
+  const [seeValues] = useState<boolean>(true);
   const [seeFilter, setSeeFilter] = useState<boolean>(false);
   const createFilterPostMutation = useFilterCreateMutation();
 

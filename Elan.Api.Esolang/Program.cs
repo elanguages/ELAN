@@ -1,10 +1,10 @@
-using ELAN.Api.Repositories;
+using Elan.Api.Esolang.Services;
 
-namespace ELAN.Api
+namespace Elan.Api.Esolang
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -31,13 +31,16 @@ namespace ELAN.Api
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddScoped<Repositories.Interfaces.ISparqlRepository, Repositories.SparqlRepository>();
-            builder.Services.AddSingleton<OntologyRepository>(provider =>
-            {
-                var ontologyPath = Path.Combine(AppContext.BaseDirectory, "Data/ontology.ttl");
-                return new OntologyRepository(ontologyPath);
-            });
+            builder.Services.AddScoped<WikidataService>();
+            builder.Services.AddScoped<EsolangService>();
 
             var app = builder.Build();
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var esolangService = scope.ServiceProvider.GetRequiredService<EsolangService>();
+                await esolangService.InitializeCacheAsync();
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -51,7 +54,6 @@ namespace ELAN.Api
             app.UseCors();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

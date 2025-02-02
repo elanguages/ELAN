@@ -1,4 +1,3 @@
-import React from "react";
 import { useSessionStorage } from "../hooks/useSessionStorage";
 import { useSPARQLCreateMutation } from "./cache/useSPARQLCreateMutation";
 import { QueryConsoleContainer } from "./page.layout";
