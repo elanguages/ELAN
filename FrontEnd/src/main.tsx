@@ -8,7 +8,11 @@ import axios from "axios";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 const queryClient = new QueryClient();
-axios.defaults.baseURL = "http://localhost:5177/";
+
+// for development environment concat with microservice port
+const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
+axios.defaults.baseURL = baseUrl;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

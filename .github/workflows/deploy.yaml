@@ -82,3 +82,12 @@ jobs:
       - name: Deploy to AKS
         run: |
           kubectl apply -f ./Devops/k8s/deployments/
+
+      - name: Restart Deployments
+        run: |
+          kubectl rollout restart deployment/elan-api-deployment
+          kubectl rollout restart deployment/elan-esolang-api-deployment
+          kubectl rollout restart deployment/elan-site-deployment
+          kubectl rollout status deployment/elan-api-deployment --timeout=120s
+          kubectl rollout status deployment/elan-esolang-api-deployment --timeout=120s
+          kubectl rollout status deployment/elan-site-deployment --timeout=120s
