@@ -163,9 +163,7 @@ Install dependencies
   npm install
 ```
 
-Start the server with Visual Studio
-
-Start the client
+Start the server with Visual Studio and start the client
 
 ```bash
   npm run dev
