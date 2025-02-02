@@ -102,24 +102,20 @@
 - SPARQL query console for an in-depth analysis of the languages.
 <!-- Color Reference -->
 
-### :art: Color Reference
+<!-- ### :art: Color Reference
 
 | Color           | Hex                                                              |
 | --------------- | ---------------------------------------------------------------- |
 | Primary Color   | ![#222831](https://via.placeholder.com/10/222831?text=+) #222831 |
 | Secondary Color | ![#393E46](https://via.placeholder.com/10/393E46?text=+) #393E46 |
 | Accent Color    | ![#00ADB5](https://via.placeholder.com/10/00ADB5?text=+) #00ADB5 |
-| Text Color      | ![#EEEEEE](https://via.placeholder.com/10/EEEEEE?text=+) #EEEEEE |
+| Text Color      | ![#EEEEEE](https://via.placeholder.com/10/EEEEEE?text=+) #EEEEEE | -->
 
 <!-- Env Variables -->
 
 ### :key: Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file
-
-`API_KEY`
-
-`ANOTHER_API_KEY`
+To run this project, there is no need for environment variables.
 
 <!-- Getting Started -->
 
@@ -129,21 +125,19 @@ To run this project, you will need to add the following environment variables to
 
 ### :bangbang: Prerequisites
 
-This project uses Yarn as package manager
-
-```bash
- npm install --global yarn
-```
+- Node.js.
+- npm.
+- Visual Studio
 
 <!-- Installation -->
 
 ### :gear: Installation
 
-Install my-project with npm
+Install Front-end Dependencies
 
 ```bash
-  yarn install my-project
-  cd my-project
+  cd ELAN/FrontEnd
+  npm install
 ```
 
 <!-- Running Tests -->
