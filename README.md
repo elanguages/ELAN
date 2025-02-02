@@ -163,22 +163,12 @@ Install dependencies
   npm install
 ```
 
-Start the server
+Start the server with Visual Studio
 
 Start the client
 
 ```bash
   npm run dev
-```
-
-<!-- Deployment -->
-
-### :triangular_flag_on_post: Deployment
-
-To deploy this project run
-
-```bash
-  yarn deploy
 ```
 
 <!-- Usage -->
