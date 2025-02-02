@@ -137,11 +137,8 @@ To run this project, there is no need for environment variables.
 
 ### :test_tube: Running Tests
 
-To run tests, run the following command
+To run tests, you need to open the Elan.Api.Esolang solution and run the tests from Elan.Api.Esolang.Tests
 
-```bash
-  yarn test test
-```
 
 <!-- Run Locally -->
 
