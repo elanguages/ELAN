@@ -15,7 +15,7 @@ export const useRecommendedCreateMutation = () => {
         {} as Record<string, any>
       );
       const response = await axios.post(
-        "/api/Esolang/recommend-esolang-entities",
+        "esolang/api/Esolang/recommend-esolang-entities",
         filteredFilters // Use the dynamically generated object
       );
       return response;
