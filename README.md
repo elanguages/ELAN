@@ -224,7 +224,7 @@ Please read the [Code of Conduct](https://github.com/Louis3797/awesome-readme-te
 
 ## :warning: License
 
-Distributed under the no License. See LICENSE.txt for more information.
+MIT. See LICENSE.txt for more information.
 
 <!-- Contact -->
 
