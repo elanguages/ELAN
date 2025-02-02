@@ -21,7 +21,7 @@ export const HomeView = () => {
   const [filters, setFilters] = useState("");
   const [graph, setGraph] = useState<Graph | null>(null);
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
-  const [seeValues] = useState<boolean>(true);
+  const [seeValues, setSeeValues] = useState<boolean>(true);
   const [seeFilter, setSeeFilter] = useState<boolean>(false);
   const createFilterPostMutation = useFilterCreateMutation();
 
@@ -215,6 +215,7 @@ export const HomeView = () => {
     return graph;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNodeRightClick = (node: any) => {
     if (graph) {
       const filtered = filterGraph(node.id, graph);
@@ -269,6 +270,7 @@ export const HomeView = () => {
           }}
           onNodeRightClick={handleNodeRightClick}
           onBackgroundClick={resetFilter} // Reset filter when clicking on the background
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           nodeThreeObject={(node: any) => {
             const sprite = new SpriteText(node.name);
             sprite.color = node.color;
