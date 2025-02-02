@@ -17,14 +17,14 @@ spec:
     - host: elanguages.site
       http:
         paths:
-          - path: /elan(/|$)(.*)
+          - path: /sparql-api(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
                 name: elan-api-service
                 port:
                   number: 80
-          - path: /esolang(/|$)(.*)
+          - path: /esolang-api(/|$)(.*)
             pathType: ImplementationSpecific
             backend:
               service:
