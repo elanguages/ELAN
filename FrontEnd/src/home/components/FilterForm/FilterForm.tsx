@@ -22,6 +22,10 @@ interface FilterFormProps {
     isPending: boolean;
     mutateAsync: (query: object) => Promise<{ data: EntitiesData }>;
   };
+  createRecommendPostMutation: {
+    isPending: boolean;
+    mutateAsync: (query: object) => Promise<{ data: EntitiesData }>;
+  };
 }
 
 export const FilterForm: React.FC<FilterFormProps> = ({
@@ -29,6 +33,7 @@ export const FilterForm: React.FC<FilterFormProps> = ({
   setFilters,
   dataFilters,
   createFilterPostMutation,
+  createRecommendPostMutation,
   setFilteredGraph,
   transformDataToGraph,
 }) => {
@@ -71,9 +76,20 @@ export const FilterForm: React.FC<FilterFormProps> = ({
       setFilters({});
     }
   };
-  const handleRecomend = (e: React.FormEvent) => {
+  const handleRecomend = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log("recomend");
+    if (createRecommendPostMutation.isPending) {
+      alert("Request is processing");
+      return;
+    }
+    try {
+      const response = await createRecommendPostMutation.mutateAsync(filters);
+      handleReset();
+      setFilteredGraph(transformDataToGraph(response.data));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const renderFormField = (key: string, value: any) => {

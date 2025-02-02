@@ -197,7 +197,82 @@ namespace Elan.Api.Esolang.Services
             return filteredEntities;
         }
 
+        public async Task<List<EsolangEntityResponse>> GetRecommendLanguagesEntities(Dictionary<string, object> filters)
+        {
+            var entities = await GetLanguagesEntities();
 
+            var exactMatches = new List<EsolangEntityResponse>();
+            var partialMatches = new List<(EsolangEntityResponse entity, int matchCount)>();
+
+            foreach (var entity in entities)
+            {
+                if (entity.Statements == null) continue;
+
+                int totalFilters = filters.Count;
+                int matchedFilters = 0;
+                bool isExactMatch = true;
+
+                foreach (var filter in filters)
+                {
+                    var filterKey = filter.Key;
+
+                    if (_keysOnlyProperty.Contains(filterKey))
+                    {
+                        // Keys-only check: the entity must contain this key
+                        if (!entity.Statements.ContainsKey(filterKey))
+                        {
+                            isExactMatch = false;
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        entity.Statements.TryGetValue(filterKey, out var statementDetails);
+
+                        if (statementDetails == null)
+                        {
+                            isExactMatch = false;
+                            continue;
+                        }
+
+                        var filterValues = JsonConvert.DeserializeObject<List<string>>(filter.Value?.ToString() ?? string.Empty);
+                        if (filterValues == null) continue;
+
+                        var entityValues = statementDetails.Values
+                            .Select(value => value.ValueLabel ?? value.Value ?? string.Empty)
+                            .ToHashSet();
+
+                        // Check if all filter values are present in entity values
+                        if (!filterValues.All(filterVal => entityValues.Contains(filterVal)))
+                        {
+                            isExactMatch = false;
+                            continue;
+                        }
+                    }
+
+                    matchedFilters++;
+                }
+
+                if (isExactMatch)
+                {
+                    exactMatches.Add(entity);
+                }
+                else if (matchedFilters > 0)
+                {
+                    partialMatches.Add((entity, matchedFilters));
+                }
+            }
+
+            // Sort partial matches by the number of filters they match (descending order)
+            var sortedPartialMatches = partialMatches
+                .OrderByDescending(e => e.matchCount)
+                .Select(e => e.entity)
+                .ToList();
+
+            // Combine exact matches with partial matches
+            return exactMatches.Concat(sortedPartialMatches).ToList();
+
+        }
         public class EsolangEntityResponse
         {
             public string EntityId { get; set; } = string.Empty;

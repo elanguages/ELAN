@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "ELAN.Api/**"
+      - "Elan.Api.Esolang/**"
+      - "FrontEnd/**"
+      - "Devops/k8s/**"
 
 permissions:
   id-token: write # Require write permission to Fetch an OIDC token.
