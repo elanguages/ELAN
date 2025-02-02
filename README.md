@@ -127,18 +127,9 @@ To run this project, there is no need for environment variables.
 
 - Node.js.
 - npm.
-- Visual Studio
+- Visual Studio.
 
 <!-- Installation -->
-
-### :gear: Installation
-
-Install Front-end Dependencies
-
-```bash
-  cd ELAN/FrontEnd
-  npm install
-```
 
 <!-- Running Tests -->
 
@@ -157,25 +148,27 @@ To run tests, run the following command
 Clone the project
 
 ```bash
-  git clone https://github.com/Louis3797/awesome-readme-template.git
+  git clone https://github.com/elanguages/ELAN.git
 ```
 
 Go to the project directory
 
 ```bash
-  cd my-project
+  cd ELAN/FrontEnd
 ```
 
 Install dependencies
 
 ```bash
-  yarn install
+  nmp install
 ```
 
 Start the server
 
+Start the client
+
 ```bash
-  yarn start
+  npm run dev
 ```
 
 <!-- Deployment -->
