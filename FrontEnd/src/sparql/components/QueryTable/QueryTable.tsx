@@ -12,7 +12,7 @@ export const QueryTable: React.FC<QueryFormProps> = ({ queryRes }) => {
     const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
     const wikidataPrefix = "http://www.wikidata.org/entity/Q";
-    const localPrefix = `${baseUrl}/sparql-entity/Q`;
+    const localPrefix = `${baseUrl}sparql-entity/Q`;
     if (url.startsWith(wikidataPrefix)) {
       return url.replace(wikidataPrefix, localPrefix);
     }

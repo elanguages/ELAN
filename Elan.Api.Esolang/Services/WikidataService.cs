@@ -18,9 +18,11 @@ namespace Elan.Api.Esolang.Services
 
         private string GetBaseUrl()
         {
-            var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin.FirstOrDefault() ??
-                         $"{_httpContextAccessor.HttpContext?.Request.Scheme}://{_httpContextAccessor.HttpContext?.Request.Host}";
-            return $"{origin}/sparql-entity/";
+            //var origin = _httpContextAccessor.HttpContext?.Request.Headers.Origin.FirstOrDefault() ??
+            //             $"{_httpContextAccessor.HttpContext?.Request.Scheme}://{_httpContextAccessor.HttpContext?.Request.Host}";
+
+            //commented because caching does not have http context
+            return "https://elanguages.site/sparql-entity/";
         }
 
         public async Task<EntityDetails?> GetEntityDetails(string id)

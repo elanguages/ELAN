@@ -82,7 +82,7 @@ export const HomeView = () => {
     const centralNode: Node = {
       id: "esolang",
       name: "EPL",
-      link: `${baseUrl}/sparql-entity/Q30312498`,
+      link: `${baseUrl}sparql-entity/Q30312498`,
       group: 1,
     };
     nodes.push(centralNode);
@@ -103,7 +103,7 @@ export const HomeView = () => {
       const langNode: Node = {
         id: entityId,
         name: entityLabel,
-        link: `${baseUrl}/sparql-entity/${entityId}`,
+        link: `${baseUrl}sparql-entity/${entityId}`,
         group: 2,
       };
       if (entityId != entityLabel) {
