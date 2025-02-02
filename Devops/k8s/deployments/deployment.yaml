@@ -1,22 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: elan-esolang-api-deployment
+  name: elan-api-deployment
   labels:
-    app: elan-esolang-api
+    app: elan-api
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: elan-esolang-api
+      app: elan-api
   template:
     metadata:
       labels:
-        app: elan-esolang-api
+        app: elan-api
     spec:
       containers:
-        - name: elan-esolang-api
-          image: elanacr.azurecr.io/elan-esolang-api:latest
+        - name: elan-api
+          image: elanacr.azurecr.io/elan-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
@@ -26,13 +27,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: elan-esolang-api-service
+  name: elan-api-service
   labels:
-    app: elan-esolang-api
+    app: elan-api
 spec:
   type: ClusterIP
   selector:
-    app: elan-esolang-api
+    app: elan-api
   ports:
     - port: 80
       targetPort: 8080

@@ -13,6 +13,9 @@ import { Node, Edge, Graph, Target, Source } from "../entities";
 import { rmven } from "../shared/utils";
 import { FilterForm } from "./components";
 export const HomeView = () => {
+  // for development environment concat with microservice port
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
   const { isLoading, data, error } = useEntitiesQuery();
   const {
     isLoading: isLoadingFilters,
@@ -79,7 +82,7 @@ export const HomeView = () => {
     const centralNode: Node = {
       id: "esolang",
       name: "EPL",
-      link: "http://localhost:5173/sparql-entity/Q30312498",
+      link: `${baseUrl}/sparql-entity/Q30312498`,
       group: 1,
     };
     nodes.push(centralNode);
@@ -100,7 +103,7 @@ export const HomeView = () => {
       const langNode: Node = {
         id: entityId,
         name: entityLabel,
-        link: `http://localhost:5173/sparql-entity/${entityId}`,
+        link: `${baseUrl}/sparql-entity/${entityId}`,
         group: 2,
       };
       if (entityId != entityLabel) {
@@ -217,6 +220,7 @@ export const HomeView = () => {
     return graph;
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleNodeRightClick = (node: any) => {
     if (graph) {
       const filtered = filterGraph(node.id, graph);
@@ -272,6 +276,7 @@ export const HomeView = () => {
           }}
           onNodeRightClick={handleNodeRightClick}
           onBackgroundClick={resetFilter} // Reset filter when clicking on the background
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           nodeThreeObject={(node: any) => {
             const sprite = new SpriteText(node.name);
             sprite.color = node.color;
