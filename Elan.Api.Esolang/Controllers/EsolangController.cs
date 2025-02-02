@@ -4,7 +4,7 @@ using Elan.Api.Esolang.Services;
 namespace Elan.Api.Esolang.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("esolang-api/[controller]")]
     public class EsolangController : ControllerBase
     {
         private readonly EsolangService _esolangService;
