@@ -5,7 +5,7 @@ using ELAN.Api.Models;
 namespace ELAN.Api.Controllers
 {
     [ApiController]
-    [Route("sparql-api/[controller]")]
+    [Route("api/[controller]")]
     public class SparqlController : ControllerBase
     {
         private readonly ISparqlRepository _sparqlRepository;

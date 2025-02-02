@@ -15,7 +15,7 @@ export const useFilterCreateMutation = () => {
         {} as Record<string, any>
       );
       const response = await axios.post(
-        "esolang-api/Esolang/filtered-esolang-entities",
+        "esolang/api/Esolang/filtered-esolang-entities",
         filteredFilters // Use the dynamically generated object
       );
       return response;
