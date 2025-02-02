@@ -5,15 +5,13 @@ using Elan.Api.Esolang.Repositories.Interfaces;
 
 namespace Elan.Api.Esolang.Services
 {
-    public class WikidataService
+    public class WikidataService : IWikidataService
     {
         private readonly ISparqlRepository _sparqlRepository;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public WikidataService(ISparqlRepository sparqlRepository, IHttpContextAccessor httpContextAccessor)
+        public WikidataService(ISparqlRepository sparqlRepository)
         {
             _sparqlRepository = sparqlRepository;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         private string GetBaseUrl()

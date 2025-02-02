@@ -1,3 +1,4 @@
+using Elan.Api.Esolang.Repositories.Interfaces;
 using Elan.Api.Esolang.Services;
 
 namespace Elan.Api.Esolang
@@ -31,7 +32,7 @@ namespace Elan.Api.Esolang
             builder.Services.AddHttpContextAccessor();
 
             builder.Services.AddScoped<Repositories.Interfaces.ISparqlRepository, Repositories.SparqlRepository>();
-            builder.Services.AddScoped<WikidataService>();
+            builder.Services.AddScoped<IWikidataService, WikidataService>();
             builder.Services.AddScoped<EsolangService>();
 
             var app = builder.Build();

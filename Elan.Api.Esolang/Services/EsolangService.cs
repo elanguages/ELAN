@@ -33,12 +33,12 @@ namespace Elan.Api.Esolang.Services
             "Homebrew formula name@en", "software version identifier@en", "official website@en", "Debian stable package@en"
         ];
 
-        private readonly WikidataService _wikidataService;
+        private readonly IWikidataService _wikidataService;
         private readonly ISparqlRepository _sparqlRepository;
         private readonly IMemoryCache _cache;
         private readonly ILogger<EsolangService> _logger;
 
-        public EsolangService(WikidataService wikidataService, ISparqlRepository sparqlRepository, IMemoryCache cache, ILogger<EsolangService> logger)
+        public EsolangService(IWikidataService wikidataService, ISparqlRepository sparqlRepository, IMemoryCache cache, ILogger<EsolangService> logger)
         {
             _wikidataService = wikidataService;
             _sparqlRepository = sparqlRepository;
