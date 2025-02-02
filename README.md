@@ -78,11 +78,7 @@
 <details>
 <summary>Database</summary>
   <ul>
-    <li><a href="https://www.mysql.com/">MySQL</a></li>
-    <li><a href="https://www.postgresql.org/">PostgreSQL</a></li>
-    <li><a href="https://redis.io/">Redis</a></li>
-    <li><a href="https://neo4j.com/">Neo4j</a></li>
-    <li><a href="https://www.mongodb.com/">MongoDB</a></li>
+    <li><a href="https://query.wikidata.org/"> Wikidata Query Service</a></li>
   </ul>
 </details>
 
@@ -90,8 +86,9 @@
 <summary>DevOps</summary>
   <ul>
     <li><a href="https://www.docker.com/">Docker</a></li>
-    <li><a href="https://www.jenkins.io/">Jenkins</a></li>
-    <li><a href="https://circleci.com/">CircleCLI</a></li>
+    <li><a href="https://learn.microsoft.com/en-us/azure/dns/dns-overview">Azure DNS Zone</a></li>
+    <li><a href="https://azure.microsoft.com/en-us/products/container-registry">Azure Container Registry</a></li>
+    <li><a href="https://azure.microsoft.com/en-us/products/kubernetes-service">Azure Kubernetes Service</a></li>
   </ul>
 </details>
 
