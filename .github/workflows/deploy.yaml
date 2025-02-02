@@ -81,4 +81,4 @@ jobs:
       # 9. Update Kubernetes manifests (Deployment, Ingress, etc.)
       - name: Deploy to AKS
         run: |
-          kubectl apply -f ./devops/k8s/deployments/
+          kubectl apply -f ./Devops/k8s/deployments/
