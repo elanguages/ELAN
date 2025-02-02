@@ -96,10 +96,10 @@
 
 ### :dart: Features
 
-- Feature 1
-- Feature 2
-- Feature 3
-
+- Visualization of esoteric programming languages in a graph network.
+- Filtering and recommending of esoteric languages based on user's preferences.
+- Esoteric language entity view for more ample information.
+- SPARQL query console for an in-depth analysis of the languages.
 <!-- Color Reference -->
 
 ### :art: Color Reference
