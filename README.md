@@ -11,7 +11,7 @@
 <!-- Badges -->
 <p>
   <a href="./LICENSE">
-    <p>MIT</p>
+    <img src="https://img.shields.io/github/license/Louis3797/awesome-readme-template.svg" alt="license" />
   </a>
 </p>
    
