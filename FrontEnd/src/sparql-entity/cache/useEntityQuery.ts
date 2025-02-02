@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { EntityData } from "../../entities";
 const getEntity = async (id: string): Promise<EntityData> => {
-  const response = await axios.get(`/api/entity/${id}`);
+  const response = await axios.get(`esolang/api/entity/${id}`);
   return response.data;
 };
 

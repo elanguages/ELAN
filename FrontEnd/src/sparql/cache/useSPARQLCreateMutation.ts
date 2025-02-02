@@ -5,7 +5,7 @@ import { handleRequestError } from "../../shared/utils";
 export const useSPARQLCreateMutation = () => {
   return useMutation({
     mutationFn: async (sparqlQuery: string) => {
-      const response = await axios.post("/api/Sparql", { sparqlQuery });
+      const response = await axios.post("elan/api/Sparql", { sparqlQuery });
       return response;
     },
     onSuccess: (res) => {

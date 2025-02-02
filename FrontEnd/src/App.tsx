@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  // Navigate,
+  Navigate,
 } from "react-router-dom";
 import RootLayout from "./layout";
 
@@ -23,7 +23,7 @@ export const App = () => {
           <Route path="/sparql/*" element={<SPARQLView />} />
 
           {/* Catch-all route to redirect to home */}
-          {/* <Route path="*" element={<Navigate to="/home" replace />} /> */}
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </RootLayout>
     </Router>
