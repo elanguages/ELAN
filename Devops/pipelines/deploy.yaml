@@ -1,0 +1,77 @@
+name: CI/CD Pipeline for Elanguages
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      # Update these values with your container registry info
+      ACR_NAME: elanacr # Your ACR name (without the .azurecr.io suffix)
+      IMAGE_TAG: latest # Could be the git SHA or a version number
+      IMAGE_API: ${{ env.ACR_NAME }}.azurecr.io/elan-api:${{ env.IMAGE_TAG }}
+      IMAGE_ESOLANG_API: ${{ env.ACR_NAME }}.azurecr.io/elan-esolang-api:${{ env.IMAGE_TAG }}
+      IMAGE_SPA: ${{ env.ACR_NAME }}.azurecr.io/elan-site:${{ env.IMAGE_TAG }}
+
+    steps:
+      # 1. Checkout code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # 2. (Optional) Set up Node if building the SPA (or API) locally
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "22"
+
+      # 3. Build the API image
+      - name: Build API Docker Image
+        run: |
+          docker build -t $IMAGE_API -f ./api/Dockerfile ./api
+
+      - name: Build ESOLANG API Docker Image
+        run: |
+          docker build -t $IMAGE_ESOLANG_API -f ./esolang-api/Dockerfile ./esolang-api
+
+      # 4. Build the SPA image
+      - name: Build SPA Docker Image
+        run: |
+          docker build -t $IMAGE_SPA -f ./spa/Dockerfile ./spa
+
+      # 5. Login to Azure (using a Service Principal)
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 6. Login to Azure Container Registry
+      - name: Log in to ACR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.ACR_NAME }}.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # 7. Push API and SPA images to ACR
+      - name: Push API Docker Image
+        run: docker push $IMAGE_API
+
+      - name: Push SPA Docker Image
+        run: docker push $IMAGE_SPA
+
+      # 8. Set up AKS context so kubectl works with your cluster
+      - name: Set AKS Context
+        uses: azure/aks-set-context@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          cluster-name: myAKSCluster
+          resource-group: myResourceGroup
+
+      # 9. Update Kubernetes manifests (Deployment, Ingress, etc.)
+      - name: Deploy to AKS
+        run: |
+          kubectl apply -f devops/k8s/
