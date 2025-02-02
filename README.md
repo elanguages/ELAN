@@ -26,7 +26,7 @@
   - [Screenshots](#camera-screenshots)
   - [Tech Stack](#space_invader-tech-stack)
   - [Features](#dart-features)
-  - [Color Reference](#art-color-reference)
+  <!-- - [Color Reference](#art-color-reference) -->
   - [Environment Variables](#key-environment-variables)
 - [Getting Started](#toolbox-getting-started)
   - [Prerequisites](#bangbang-prerequisites)
