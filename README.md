@@ -193,9 +193,8 @@ MIT. See LICENSE for more information.
 
 ## :handshake: Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
-
-Project Link: [https://github.com/Louis3797/awesome-readme-template](https://github.com/Louis3797/awesome-readme-template)
+Marcu Eduard - marcu.eduard37@gmail.com
+Dragoi George Stefan - dragoigeorgestefan@gmail.com
 
 <!-- Acknowledgments -->
 
