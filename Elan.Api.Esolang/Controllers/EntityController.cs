@@ -1,4 +1,4 @@
-﻿using Elan.Api.Esolang.Services;
+﻿using Elan.Api.Esolang.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Elan.Api.Esolang.Controllers
@@ -7,9 +7,9 @@ namespace Elan.Api.Esolang.Controllers
     [Route("api/[controller]")]
     public class EntityController : ControllerBase
     {
-        private readonly WikidataService _wikidataService;
+        private readonly IWikidataService _wikidataService;
 
-        public EntityController(WikidataService wikidataService)
+        public EntityController(IWikidataService wikidataService)
         {
             _wikidataService = wikidataService;
         }
